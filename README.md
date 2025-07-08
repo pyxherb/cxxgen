@@ -1,4 +1,3 @@
-# WandJSON
+# CXXGen
 
-WandJSON is an experimental exception-free JSON manipulating library based on
-PEFF.
+A simple C++ code generation framework library.

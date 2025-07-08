@@ -27,6 +27,8 @@ set_target_properties(cxxgen_static PROPERTIES
     VERSION ${PROJECT_VERSION}
 )
 
+add_subdirectory("ast")
+
 install(TARGETS cxxgen cxxgen_static
     EXPORT cxxgenTargets
     LIBRARY DESTINATION lib/
