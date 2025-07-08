@@ -13,3 +13,15 @@ CXXGEN_API ClassNode::ClassNode(peff::Alloc *selfAllocator, TranslationUnit *tra
 
 CXXGEN_API ClassNode::~ClassNode() {
 }
+
+CXXGEN_API StructNode::StructNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit, AstNodeType astNodeType) : AbstractModuleNode(selfAllocator, translationUnit, AstNodeType::Struct) {
+}
+
+CXXGEN_API StructNode::~StructNode() {
+}
+
+CXXGEN_API NamespaceNode::NamespaceNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit, AstNodeType astNodeType) : AbstractModuleNode(selfAllocator, translationUnit, AstNodeType::Namespace) {
+}
+
+CXXGEN_API NamespaceNode::~NamespaceNode() {
+}

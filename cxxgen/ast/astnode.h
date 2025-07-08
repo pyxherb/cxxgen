@@ -43,7 +43,7 @@ namespace cxxgen {
 		}
 	};
 
-	enum class AstNodeType {
+	enum class AstNodeType : uint8_t {
 		Directive,
 		IncludeDirective,
 		IfDirective,
@@ -56,7 +56,8 @@ namespace cxxgen {
 		Var,
 		TypeName,
 		Stmt,
-		Expr
+		Expr,
+		AccessSpecifier
 	};
 
 	class AstNode : public peff::SharedFromThis<AstNode> {

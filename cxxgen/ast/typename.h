@@ -111,6 +111,30 @@ namespace cxxgen {
 		CXXGEN_API FnPointerTypeNameNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
 		CXXGEN_API virtual ~FnPointerTypeNameNode();
 	};
+
+	class ArrayTypeNameNode : public TypeNameNode {
+	public:
+		AstNodePtr<TypeNameNode> elementType;
+
+		CXXGEN_API ArrayTypeNameNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
+		CXXGEN_API virtual ~ArrayTypeNameNode();
+	};
+
+	class RefTypeNameNode : public TypeNameNode {
+	public:
+		AstNodePtr<TypeNameNode> referencedType;
+
+		CXXGEN_API RefTypeNameNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
+		CXXGEN_API virtual ~RefTypeNameNode();
+	};
+
+	class RvalueTypeNameNode : public TypeNameNode {
+	public:
+		AstNodePtr<TypeNameNode> referencedType;
+
+		CXXGEN_API RvalueTypeNameNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
+		CXXGEN_API virtual ~RvalueTypeNameNode();
+	};
 }
 
 #endif

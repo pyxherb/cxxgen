@@ -28,8 +28,24 @@ namespace cxxgen {
 
 	class ClassNode : public AbstractModuleNode {
 	public:
+		bool isFinal = false;
+
 		CXXGEN_API ClassNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit, AstNodeType astNodeType);
 		CXXGEN_API virtual ~ClassNode();
+	};
+
+	class StructNode : public AbstractModuleNode {
+	public:
+		bool isFinal = false;
+
+		CXXGEN_API StructNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit, AstNodeType astNodeType);
+		CXXGEN_API virtual ~StructNode();
+	};
+
+	class NamespaceNode : public AbstractModuleNode {
+	public:
+		CXXGEN_API NamespaceNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit, AstNodeType astNodeType);
+		CXXGEN_API virtual ~NamespaceNode();
 	};
 }
 

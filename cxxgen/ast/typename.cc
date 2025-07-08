@@ -44,14 +44,32 @@ CXXGEN_API DoubleTypeNameNode::DoubleTypeNameNode(peff::Alloc *selfAllocator, Tr
 CXXGEN_API DoubleTypeNameNode::~DoubleTypeNameNode() {
 }
 
-CXXGEN_API PointerTypeNameNode::PointerTypeNameNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : TypeNameNode(selfAllocator, translationUnit, TypeNameKind::Void) {
+CXXGEN_API PointerTypeNameNode::PointerTypeNameNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : TypeNameNode(selfAllocator, translationUnit, TypeNameKind::Pointer) {
 }
 
 CXXGEN_API PointerTypeNameNode::~PointerTypeNameNode() {
 }
 
-CXXGEN_API FnPointerTypeNameNode::FnPointerTypeNameNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : TypeNameNode(selfAllocator, translationUnit, TypeNameKind::Void), params(selfAllocator) {
+CXXGEN_API FnPointerTypeNameNode::FnPointerTypeNameNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : TypeNameNode(selfAllocator, translationUnit, TypeNameKind::FnPointer), params(selfAllocator) {
 }
 
 CXXGEN_API FnPointerTypeNameNode::~FnPointerTypeNameNode() {
+}
+
+CXXGEN_API ArrayTypeNameNode::ArrayTypeNameNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : TypeNameNode(selfAllocator, translationUnit, TypeNameKind::Array) {
+}
+
+CXXGEN_API ArrayTypeNameNode::~ArrayTypeNameNode() {
+}
+
+CXXGEN_API RefTypeNameNode::RefTypeNameNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : TypeNameNode(selfAllocator, translationUnit, TypeNameKind::Ref) {
+}
+
+CXXGEN_API RefTypeNameNode::~RefTypeNameNode() {
+}
+
+CXXGEN_API RvalueTypeNameNode::RvalueTypeNameNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : TypeNameNode(selfAllocator, translationUnit, TypeNameKind::Rvalue) {
+}
+
+CXXGEN_API RvalueTypeNameNode::~RvalueTypeNameNode() {
 }

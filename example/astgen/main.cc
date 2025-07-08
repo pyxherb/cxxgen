@@ -1,4 +1,4 @@
-#include <cxxgen/builder.h>
+#include <cxxgen/ast.h>
 
 int main() {
 
