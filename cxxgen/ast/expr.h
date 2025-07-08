@@ -22,12 +22,16 @@ namespace cxxgen {
 
 		Unary,
 		Binary,
+		MemberAccess,
+		PtrMemberAccess,
 		Call,
 		Cast,
 		New,
-		Conditional,
+		PlacementNew,
+		Ternary,
 		TypeSizeof,
 		ExprSizeof,
+		Alignof,
 		This
 	};
 
@@ -150,6 +154,99 @@ namespace cxxgen {
 
 		CXXGEN_API BinaryExprNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
 		CXXGEN_API virtual ~BinaryExprNode();
+	};
+
+	class MemberAccessExprNode final : public ExprNode {
+	public:
+		AstNodePtr<ExprNode> lhs;
+		AstNodePtr<IdExprNode> rhs;
+
+		CXXGEN_API MemberAccessExprNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
+		CXXGEN_API virtual ~MemberAccessExprNode();
+	};
+
+	class PtrMemberAccessExprNode final : public ExprNode {
+	public:
+		AstNodePtr<ExprNode> lhs;
+		AstNodePtr<IdExprNode> rhs;
+
+		CXXGEN_API PtrMemberAccessExprNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
+		CXXGEN_API virtual ~PtrMemberAccessExprNode();
+	};
+
+	class CallExprNode final : public ExprNode {
+	public:
+		AstNodePtr<ExprNode> target;
+		peff::DynArray<AstNodePtr<ExprNode>> args;
+
+		CXXGEN_API CallExprNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
+		CXXGEN_API virtual ~CallExprNode();
+	};
+
+	class CastExprNode final : public ExprNode {
+	public:
+		AstNodePtr<TypeNameNode> destType;
+		AstNodePtr<ExprNode> operand;
+
+		CXXGEN_API CastExprNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
+		CXXGEN_API virtual ~CastExprNode();
+	};
+
+	class NewExprNode final : public ExprNode {
+	public:
+		AstNodePtr<TypeNameNode> type;
+		peff::DynArray<AstNodePtr<ExprNode>> args;
+
+		CXXGEN_API NewExprNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
+		CXXGEN_API virtual ~NewExprNode();
+	};
+
+	class PlacementNewExprNode final : public ExprNode {
+	public:
+		AstNodePtr<ExprNode> location;
+		AstNodePtr<TypeNameNode> type;
+		peff::DynArray<AstNodePtr<ExprNode>> args;
+
+		CXXGEN_API PlacementNewExprNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
+		CXXGEN_API virtual ~PlacementNewExprNode();
+	};
+
+	class TernaryExprNode final : public ExprNode {
+	public:
+		AstNodePtr<ExprNode> condition, trueExpr, falseExpr;
+
+		CXXGEN_API TernaryExprNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
+		CXXGEN_API virtual ~TernaryExprNode();
+	};
+
+	class TypeSizeofExprNode final : public ExprNode {
+	public:
+		AstNodePtr<TypeNameNode> operand;
+
+		CXXGEN_API TypeSizeofExprNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
+		CXXGEN_API virtual ~TypeSizeofExprNode();
+	};
+
+	class ExprSizeofExprNode final : public ExprNode {
+	public:
+		AstNodePtr<ExprNode> operand;
+
+		CXXGEN_API ExprSizeofExprNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
+		CXXGEN_API virtual ~ExprSizeofExprNode();
+	};
+
+	class AlignofExprNode final : public ExprNode {
+	public:
+		AstNodePtr<TypeNameNode> operand;
+
+		CXXGEN_API AlignofExprNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
+		CXXGEN_API virtual ~AlignofExprNode();
+	};
+
+	class ThisExprNode final : public ExprNode {
+	public:
+		CXXGEN_API ThisExprNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
+		CXXGEN_API virtual ~ThisExprNode();
 	};
 }
 
