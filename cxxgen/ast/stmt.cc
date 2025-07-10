@@ -13,3 +13,15 @@ CXXGEN_API ExprStmtNode::ExprStmtNode(peff::Alloc *selfAllocator, TranslationUni
 
 CXXGEN_API ExprStmtNode::~ExprStmtNode() {
 }
+
+CXXGEN_API VarDefEntry::VarDefEntry(peff::Alloc *allocator) : name(allocator), decorators(allocator) {
+}
+
+CXXGEN_API VarDefEntry::~VarDefEntry() {
+}
+
+CXXGEN_API VarDefNode::VarDefNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : AstNode(AstNodeType::Var, selfAllocator, translationUnit), varDefEntries(selfAllocator) {
+}
+
+CXXGEN_API VarDefNode::~VarDefNode() {
+}

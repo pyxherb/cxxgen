@@ -35,8 +35,29 @@ namespace cxxgen {
 		CXXGEN_API virtual ~ExprStmtNode();
 	};
 
+	enum class VarDefDecoratorKind {
+		Pointer = 0,
+		Array,
+		Ref,
+		Rvalue,
+	};
+
+	struct VarDefDecorator {
+		VarDefDecoratorKind decoratorKind;
+	};
+
+	struct VarDefEntry {
+		peff::String name;
+		peff::DynArray<VarDefDecorator> decorators;
+
+		CXXGEN_API VarDefEntry(peff::Alloc *allocator);
+		CXXGEN_API ~VarDefEntry();
+	};
+
 	class VarDefNode : public AstNode {
 	public:
+		peff::DynArray<VarDefEntry> varDefEntries;
+
 		CXXGEN_API VarDefNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
 		CXXGEN_API virtual ~VarDefNode();
 	};
