@@ -22,6 +22,7 @@ namespace cxxgen {
 
 		Unary,
 		Binary,
+		ScopeResolve,
 		MemberAccess,
 		PtrMemberAccess,
 		Call,
@@ -154,6 +155,15 @@ namespace cxxgen {
 
 		CXXGEN_API BinaryExprNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
 		CXXGEN_API virtual ~BinaryExprNode();
+	};
+
+	class ScopeResolveExprNode final : public ExprNode {
+	public:
+		AstNodePtr<ExprNode> lhs;
+		AstNodePtr<IdExprNode> rhs;
+
+		CXXGEN_API ScopeResolveExprNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
+		CXXGEN_API virtual ~ScopeResolveExprNode();
 	};
 
 	class MemberAccessExprNode final : public ExprNode {

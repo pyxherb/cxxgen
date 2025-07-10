@@ -32,6 +32,10 @@ CXXGEN_API BinaryExprNode::BinaryExprNode(peff::Alloc *selfAllocator, Translatio
 
 CXXGEN_API BinaryExprNode::~BinaryExprNode() {}
 
+CXXGEN_API ScopeResolveExprNode::ScopeResolveExprNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : ExprNode(selfAllocator, translationUnit, ExprKind::ScopeResolve) {}
+
+CXXGEN_API ScopeResolveExprNode::~ScopeResolveExprNode() {}
+
 CXXGEN_API MemberAccessExprNode::MemberAccessExprNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : ExprNode(selfAllocator, translationUnit, ExprKind::MemberAccess) {}
 
 CXXGEN_API MemberAccessExprNode::~MemberAccessExprNode() {}

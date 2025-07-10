@@ -15,7 +15,7 @@ namespace cxxgen {
 		CXXGEN_API virtual ~AbstractModuleNode();
 	};
 
-	enum class AccessModifier {
+	enum class InheritanceAccess {
 		Default = 0,
 		Public,
 		Private,
@@ -23,7 +23,7 @@ namespace cxxgen {
 	};
 
 	struct InheritanceEntry {
-		AccessModifier accessModifier;
+		InheritanceAccess accessModifier;
 	};
 
 	class ClassNode : public AbstractModuleNode {
