@@ -99,7 +99,7 @@ namespace cxxgen {
 
 	struct ParamSlot {
 		AstNodePtr<TypeNameNode> type;
-		IdStorage name;
+		peff::String name;
 	};
 
 	class FnPointerTypeNameNode : public TypeNameNode {

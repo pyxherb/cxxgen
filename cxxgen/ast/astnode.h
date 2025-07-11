@@ -19,8 +19,12 @@ namespace cxxgen {
 		CXXGEN_FORCEINLINE void clearDeferredDestructibleAstNodes() {
 			if (destructibleAstNodeList) {
 				_doClearDeferredDestructibleAstNodes();
+				destructibleAstNodeList = nullptr;
 			}
 		}
+
+		CXXGEN_API TranslationUnit();
+		CXXGEN_API ~TranslationUnit();
 	};
 
 	typedef void (*AstNodeDestructor)(AstNode *astNode);
@@ -33,9 +37,11 @@ namespace cxxgen {
 		inline virtual ~AstNodeControlBlock() {}
 
 		inline virtual void onStrongRefZero() noexcept override {
-			addAstNodeToDestructibleList(this->ptr, [](AstNode *astNode) {
-				peff::destroyAndRelease<T>(astNode->selfAllocator.get(), static_cast<T *>(astNode), alignof(T));
-			});
+			if (this->ptr) {
+				addAstNodeToDestructibleList(this->ptr, [](AstNode *astNode) {
+					peff::destroyAndRelease<T>(astNode->selfAllocator.get(), static_cast<T *>(astNode), alignof(T));
+				});
+			}
 		}
 
 		inline virtual void onRefZero() noexcept override {

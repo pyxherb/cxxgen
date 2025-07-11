@@ -9,6 +9,7 @@ namespace cxxgen {
 		Expr = 0,
 		LocalVarDef,
 		If,
+		IfConstexpr,
 		For,
 		While,
 		DoWhile,
@@ -53,6 +54,15 @@ namespace cxxgen {
 
 		CXXGEN_API IfStmtNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
 		CXXGEN_API virtual ~IfStmtNode();
+	};
+
+	class IfConstexprStmtNode : public StmtNode {
+	public:
+		AstNodePtr<ExprStmtNode> condition;
+		AstNodePtr<StmtNode> trueBranch, elseBranch;
+
+		CXXGEN_API IfConstexprStmtNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
+		CXXGEN_API virtual ~IfConstexprStmtNode();
 	};
 
 	class ForStmtNode : public StmtNode {

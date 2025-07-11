@@ -2,6 +2,14 @@
 
 using namespace cxxgen;
 
+CXXGEN_API TranslationUnit::TranslationUnit() {
+
+}
+
+CXXGEN_API TranslationUnit::~TranslationUnit() {
+	clearDeferredDestructibleAstNodes();
+}
+
 CXXGEN_API void TranslationUnit::_doClearDeferredDestructibleAstNodes() {
 	AstNode *i, *next;
 
@@ -22,7 +30,7 @@ CXXGEN_API void cxxgen::addAstNodeToDestructibleList(AstNode *astNode, AstNodeDe
 	astNode->translationUnit->destructibleAstNodeList = astNode;
 }
 
-CXXGEN_API AstNode::AstNode(AstNodeType astNodeType, peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : translationUnit(translationUnit), astNodeType(astNodeType) {
+CXXGEN_API AstNode::AstNode(AstNodeType astNodeType, peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : translationUnit(translationUnit), selfAllocator(selfAllocator), astNodeType(astNodeType) {
 	translationUnit->clearDeferredDestructibleAstNodes();
 }
 

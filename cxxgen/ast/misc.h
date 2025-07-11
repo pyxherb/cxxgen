@@ -61,6 +61,10 @@ namespace cxxgen {
 		AstNodePtr<TypeNameNode> baseType;
 		peff::DynArray<VarDefEntry> varDefEntries;
 
+		bool isConstexpr = false;
+		bool isStatic = false;
+		bool isInline = false;
+
 		CXXGEN_API VarDefNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
 		CXXGEN_API virtual ~VarDefNode();
 	};

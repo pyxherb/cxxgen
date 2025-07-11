@@ -14,19 +14,23 @@ CXXGEN_API RootNode::RootNode(peff::Alloc *selfAllocator, TranslationUnit *trans
 CXXGEN_API RootNode::~RootNode() {
 }
 
-CXXGEN_API ClassNode::ClassNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : AbstractModuleNode(selfAllocator, translationUnit, AstNodeType::Class) {
+CXXGEN_API ClassNode::ClassNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : AbstractModuleNode(selfAllocator, translationUnit, AstNodeType::Class), name(selfAllocator) {
 }
 
 CXXGEN_API ClassNode::~ClassNode() {
 }
 
-CXXGEN_API StructNode::StructNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : AbstractModuleNode(selfAllocator, translationUnit, AstNodeType::Struct) {
+CXXGEN_API bool ClassNode::setName(const std::string_view& name) {
+	return this->name.build(name);
+}
+
+CXXGEN_API StructNode::StructNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : AbstractModuleNode(selfAllocator, translationUnit, AstNodeType::Struct), name(selfAllocator) {
 }
 
 CXXGEN_API StructNode::~StructNode() {
 }
 
-CXXGEN_API NamespaceNode::NamespaceNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : AbstractModuleNode(selfAllocator, translationUnit, AstNodeType::Namespace) {
+CXXGEN_API NamespaceNode::NamespaceNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : AbstractModuleNode(selfAllocator, translationUnit, AstNodeType::Namespace), name(selfAllocator) {
 }
 
 CXXGEN_API NamespaceNode::~NamespaceNode() {

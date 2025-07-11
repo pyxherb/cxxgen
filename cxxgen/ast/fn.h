@@ -13,6 +13,7 @@ namespace cxxgen {
 		bool isConst = false;
 		bool isFinal = false;
 		bool isVirtual = false;
+		bool isInline = false;
 
 		CXXGEN_API FnNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
 		CXXGEN_API virtual ~FnNode();

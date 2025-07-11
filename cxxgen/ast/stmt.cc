@@ -26,6 +26,12 @@ CXXGEN_API IfStmtNode::IfStmtNode(peff::Alloc *selfAllocator, TranslationUnit *t
 CXXGEN_API IfStmtNode::~IfStmtNode() {
 }
 
+CXXGEN_API IfConstexprStmtNode::IfConstexprStmtNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : StmtNode(selfAllocator, translationUnit, StmtKind::If) {
+}
+
+CXXGEN_API IfConstexprStmtNode::~IfConstexprStmtNode() {
+}
+
 CXXGEN_API ForStmtNode::ForStmtNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : StmtNode(selfAllocator, translationUnit, StmtKind::For) {
 }
 

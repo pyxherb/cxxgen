@@ -80,7 +80,7 @@ namespace cxxgen {
 
 	class IdExprNode final : public ExprNode {
 	public:
-		IdStorage name;
+		peff::String name;
 
 		CXXGEN_API IdExprNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
 		CXXGEN_API virtual ~IdExprNode();

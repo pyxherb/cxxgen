@@ -12,8 +12,8 @@ namespace cxxgen {
 	using DirectiveArgs =
 		std::variant<
 			std::monostate,
-			IdStorage,
-			peff::DynArray<IdStorage>>;
+			peff::String,
+			peff::DynArray<peff::String>>;
 
 	class DirectiveNode : public AstNode {
 	public:
@@ -37,7 +37,7 @@ namespace cxxgen {
 
 	class IfdefDirectiveNode : public AstNode {
 	public:
-		IdStorage name;
+		peff::String name;
 		peff::DynArray<AstNodePtr<AstNode>> body;
 		std::optional<
 			peff::DynArray<AstNodePtr<AstNode>>>
@@ -49,7 +49,7 @@ namespace cxxgen {
 
 	class IfndefDirectiveNode : public AstNode {
 	public:
-		IdStorage name;
+		peff::String name;
 		peff::DynArray<AstNodePtr<AstNode>> body;
 		std::optional<
 			peff::DynArray<AstNodePtr<AstNode>>>

@@ -14,13 +14,13 @@ CXXGEN_API IfDirectiveNode::IfDirectiveNode(peff::Alloc *selfAllocator, Translat
 CXXGEN_API IfDirectiveNode::~IfDirectiveNode() {
 }
 
-CXXGEN_API IfdefDirectiveNode::IfdefDirectiveNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : AstNode(AstNodeType::IfdefDirective, selfAllocator, translationUnit), body(selfAllocator) {
+CXXGEN_API IfdefDirectiveNode::IfdefDirectiveNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : AstNode(AstNodeType::IfdefDirective, selfAllocator, translationUnit), body(selfAllocator), name(selfAllocator) {
 }
 
 CXXGEN_API IfdefDirectiveNode::~IfdefDirectiveNode() {
 }
 
-CXXGEN_API IfndefDirectiveNode::IfndefDirectiveNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : AstNode(AstNodeType::IfndefDirective, selfAllocator, translationUnit), body(selfAllocator) {
+CXXGEN_API IfndefDirectiveNode::IfndefDirectiveNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : AstNode(AstNodeType::IfndefDirective, selfAllocator, translationUnit), body(selfAllocator), name(selfAllocator) {
 }
 
 CXXGEN_API IfndefDirectiveNode::~IfndefDirectiveNode() {
