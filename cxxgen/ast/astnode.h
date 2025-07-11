@@ -52,6 +52,7 @@ namespace cxxgen {
 		Fn,
 		Struct,
 		Class,
+		Root,
 		Namespace,
 		VarDef,
 		TypeDef,
@@ -82,6 +83,11 @@ namespace cxxgen {
 
 	template <typename T>
 	using AstNodePtr = peff::SharedPtr<T>;
+
+	template <typename T, typename... Args>
+	PEFF_FORCEINLINE AstNodePtr<T> makeAstNode(peff::Alloc *allocator, Args &&...args) {
+		return peff::makeSharedWithControlBlock<T, AstNodeControlBlock<T>>(allocator, std::forward<Args>(args)...);
+	}
 }
 
 #endif

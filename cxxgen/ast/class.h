@@ -26,11 +26,17 @@ namespace cxxgen {
 		InheritanceAccess accessModifier;
 	};
 
+	class RootNode : public AbstractModuleNode {
+	public:
+		CXXGEN_API RootNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
+		CXXGEN_API virtual ~RootNode();
+	};
+
 	class ClassNode : public AbstractModuleNode {
 	public:
 		bool isFinal = false;
 
-		CXXGEN_API ClassNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit, AstNodeType astNodeType);
+		CXXGEN_API ClassNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
 		CXXGEN_API virtual ~ClassNode();
 	};
 
@@ -38,13 +44,13 @@ namespace cxxgen {
 	public:
 		bool isFinal = false;
 
-		CXXGEN_API StructNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit, AstNodeType astNodeType);
+		CXXGEN_API StructNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
 		CXXGEN_API virtual ~StructNode();
 	};
 
 	class NamespaceNode : public AbstractModuleNode {
 	public:
-		CXXGEN_API NamespaceNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit, AstNodeType astNodeType);
+		CXXGEN_API NamespaceNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
 		CXXGEN_API virtual ~NamespaceNode();
 	};
 }

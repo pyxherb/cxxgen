@@ -16,7 +16,7 @@ CXXGEN_API NullptrLiteralExprNode::NullptrLiteralExprNode(peff::Alloc *selfAlloc
 
 CXXGEN_API NullptrLiteralExprNode::~NullptrLiteralExprNode() {}
 
-CXXGEN_API IdExprNode::IdExprNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : ExprNode(selfAllocator, translationUnit, ExprKind::NullptrLiteral) {}
+CXXGEN_API IdExprNode::IdExprNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : ExprNode(selfAllocator, translationUnit, ExprKind::NullptrLiteral), name(selfAllocator) {}
 
 CXXGEN_API IdExprNode::~IdExprNode() {}
 
