@@ -68,7 +68,7 @@ CXXGEN_API AstNodePtr<ScopeResolveExprNode> AstBuilder::createScopeResolveExpr()
 	return cxxgen::makeAstNode<cxxgen::ScopeResolveExprNode>(allocator.get(), allocator.get(), translationUnit);
 }
 
-CXXGEN_API AstNodePtr<ExprNode> AstBuilder::buildQualifiedId(AstNodePtr<IdExprNode> *ids, size_t nIds) {
+CXXGEN_API AstNodePtr<ExprNode> AstBuilder::buildQualifiedIdExpr(AstNodePtr<IdExprNode> *ids, size_t nIds) {
 	auto p = createScopeResolveExpr();
 
 	if (!p) {

@@ -6,6 +6,8 @@
 namespace cxxgen {
 	class FnNode : public AstNode {
 	public:
+		peff::String name;
+
 		AstNodePtr<TypeNameNode> returnType;
 		peff::DynArray<ParamSlot> params;
 		bool isNoexcept = false;

@@ -88,6 +88,7 @@ namespace cxxgen {
 	};
 
 	[[nodiscard]] CXXGEN_API bool _dumpAstNode(DumpContext *dumpContext);
+	[[nodiscard]] CXXGEN_API bool dumpAstNode(peff::Alloc *allocator, DumpWriter *writer, AstNode *astNode);
 }
 
 #endif

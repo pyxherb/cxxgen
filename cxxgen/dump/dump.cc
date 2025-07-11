@@ -92,8 +92,44 @@ loop:
 					break;
 				case AstNodeType::IfndefDirective:
 					break;
-				case AstNodeType::Fn:
+				case AstNodeType::Fn: {
+					FnNode *f = (FnNode *)astNode;
+
+					if (f->isVirtual)
+						CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("virtual "));
+
+					if (f->isInline)
+						CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("inline "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpAstNode(dumpContext->frames.allocator(), dumpContext->writer, f->returnType.castTo<AstNode>()));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(f->name));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+					for (size_t i = 0; i < f->params.size(); ++i) {
+						if (i) {
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(", "));
+						}
+
+						CXXGEN_RETURN_IF_WRITE_FAILED(dumpAstNode(dumpContext->frames.allocator(), dumpContext->writer, f->params.at(i).type));
+
+						CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" "));
+
+						CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(f->params.at(i).name));
+					}
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+					if (f->isConst)
+						CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" const"));
+
+					if (f->isNoexcept)
+						CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" noexcept"));
 					break;
+				}
 				case AstNodeType::Struct:
 					break;
 				case AstNodeType::Class:
@@ -460,4 +496,21 @@ loop:
 			}
 		}
 	}
+}
+
+CXXGEN_API bool cxxgen::dumpAstNode(peff::Alloc *allocator, DumpWriter *writer, AstNode *astNode) {
+	DumpContext dumpContext(allocator, writer);
+
+	{
+		DumpFrame dumpFrame;
+
+		dumpFrame.astNode = astNode->sharedFromThis();
+
+		dumpFrame.frameType = DumpFrameType::Initial;
+
+		if (!dumpContext.frames.pushBack(std::move(dumpFrame)))
+			return false;
+	}
+
+	return _dumpAstNode(&dumpContext);
 }
