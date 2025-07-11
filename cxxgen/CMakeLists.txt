@@ -28,6 +28,7 @@ set_target_properties(cxxgen PROPERTIES
 )
 
 add_subdirectory("ast")
+add_subdirectory("dump")
 
 install(TARGETS cxxgend cxxgen
     EXPORT cxxgenTargets

@@ -67,3 +67,27 @@ CXXGEN_API BlockStmtNode::BlockStmtNode(peff::Alloc *selfAllocator, TranslationU
 
 CXXGEN_API BlockStmtNode::~BlockStmtNode() {
 }
+
+CXXGEN_API LabelStmtNode::LabelStmtNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : StmtNode(selfAllocator, translationUnit, StmtKind::Label), name(selfAllocator) {
+}
+
+CXXGEN_API LabelStmtNode::~LabelStmtNode() {
+}
+
+CXXGEN_API GotoStmtNode::GotoStmtNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : StmtNode(selfAllocator, translationUnit, StmtKind::Label), name(selfAllocator) {
+}
+
+CXXGEN_API GotoStmtNode::~GotoStmtNode() {
+}
+
+CXXGEN_API SwitchStmtNode::SwitchStmtNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : StmtNode(selfAllocator, translationUnit, StmtKind::Switch), body(selfAllocator) {
+}
+
+CXXGEN_API SwitchStmtNode::~SwitchStmtNode() {
+}
+
+CXXGEN_API CaseLabelStmtNode::CaseLabelStmtNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : StmtNode(selfAllocator, translationUnit, StmtKind::CaseLabel) {
+}
+
+CXXGEN_API CaseLabelStmtNode::~CaseLabelStmtNode() {
+}

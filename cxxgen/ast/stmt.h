@@ -18,7 +18,8 @@ namespace cxxgen {
 		Block,
 		Label,
 		Goto,
-		Switch
+		Switch,
+		CaseLabel
 	};
 
 	class StmtNode : public AstNode {
@@ -109,6 +110,38 @@ namespace cxxgen {
 
 		CXXGEN_API BlockStmtNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
 		CXXGEN_API virtual ~BlockStmtNode();
+	};
+
+	class LabelStmtNode : public StmtNode {
+	public:
+		peff::String name;
+
+		CXXGEN_API LabelStmtNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
+		CXXGEN_API virtual ~LabelStmtNode();
+	};
+
+	class GotoStmtNode : public StmtNode {
+	public:
+		peff::String name;
+
+		CXXGEN_API GotoStmtNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
+		CXXGEN_API virtual ~GotoStmtNode();
+	};
+
+	class SwitchStmtNode : public StmtNode {
+	public:
+		peff::DynArray<AstNodePtr<StmtNode>> body;
+
+		CXXGEN_API SwitchStmtNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
+		CXXGEN_API virtual ~SwitchStmtNode();
+	};
+
+	class CaseLabelStmtNode : public StmtNode {
+	public:
+		AstNodePtr<ExprNode> caseValue;
+
+		CXXGEN_API CaseLabelStmtNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
+		CXXGEN_API virtual ~CaseLabelStmtNode();
 	};
 }
 

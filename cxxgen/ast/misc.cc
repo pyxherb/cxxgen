@@ -38,8 +38,14 @@ CXXGEN_API RvalueDeclaractorNode::RvalueDeclaractorNode(peff::Alloc *selfAllocat
 CXXGEN_API RvalueDeclaractorNode::~RvalueDeclaractorNode() {
 }
 
-CXXGEN_API VarDefNode::VarDefNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : AstNode(AstNodeType::Var, selfAllocator, translationUnit), varDefEntries(selfAllocator) {
+CXXGEN_API VarDefNode::VarDefNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : AstNode(AstNodeType::VarDef, selfAllocator, translationUnit), varDefEntries(selfAllocator) {
 }
 
 CXXGEN_API VarDefNode::~VarDefNode() {
+}
+
+CXXGEN_API TypeDefNode::TypeDefNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : AstNode(AstNodeType::TypeDef, selfAllocator, translationUnit), varDefEntries(selfAllocator) {
+}
+
+CXXGEN_API TypeDefNode::~TypeDefNode() {
 }
