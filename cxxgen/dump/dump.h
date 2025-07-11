@@ -8,6 +8,8 @@ namespace cxxgen {
 	enum class DumpFrameType {
 		Initial = 0,
 
+		IdTemplateArgs,
+
 		InitializerListElement,
 
 		UnaryOperand,
@@ -44,6 +46,10 @@ namespace cxxgen {
 		AlignofOperand,
 	};
 
+	struct IdTemplateArgsDumpFrameData {
+		size_t index;
+	};
+
 	struct InitializerListElementDumpFrameData {
 		size_t index;
 	};
@@ -63,6 +69,7 @@ namespace cxxgen {
 	struct DumpFrame {
 		std::variant<
 			std::monostate,
+			IdTemplateArgsDumpFrameData,
 			InitializerListElementDumpFrameData,
 			CallArgsDumpFrameData,
 			NewArgsDumpFrameData,

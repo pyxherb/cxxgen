@@ -114,30 +114,92 @@ loop:
 					ExprNode *expr = (ExprNode *)astNode;
 
 					switch (expr->exprKind) {
-						case ExprKind::IntLiteral:
+						case ExprKind::IntLiteral: {
+							char s[12];
+
+							int len = sprintf(s, "%d", ((IntLiteralExprNode *)expr)->data);
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(s, len));
 							break;
-						case ExprKind::LongLiteral:
+						}
+						case ExprKind::LongLiteral: {
+							char s[22];
+
+							int len = sprintf(s, "%ldL", ((LongLiteralExprNode *)expr)->data);
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(s, len));
 							break;
-						case ExprKind::UIntLiteral:
+						}
+						case ExprKind::UIntLiteral: {
+							char s[13];
+
+							int len = sprintf(s, "%uU", ((IntLiteralExprNode *)expr)->data);
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(s, len));
 							break;
-						case ExprKind::ULongLiteral:
+						}
+						case ExprKind::ULongLiteral: {
+							char s[23];
+
+							int len = sprintf(s, "%luLU", ((LongLiteralExprNode *)expr)->data);
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(s, len));
 							break;
+						}
 						case ExprKind::CharLiteral:
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(&(((CharLiteralExprNode *)expr)->data), 1));
+
 							break;
 						case ExprKind::StringLiteral:
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(((StringLiteralExprNode *)expr)->data));
 							break;
-						case ExprKind::FloatLiteral:
+						case ExprKind::FloatLiteral: {
+							char s[32];
+
+							int len = snprintf(s, sizeof(s), "%.8g", ((FloatLiteralExprNode *)expr)->data);
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(s, len));
 							break;
-						case ExprKind::DoubleLiteral:
+						}
+						case ExprKind::DoubleLiteral: {
+							char s[64];
+
+							int len = snprintf(s, sizeof(s), "%.17g", ((FloatLiteralExprNode *)expr)->data);
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(s, len));
 							break;
+						}
 						case ExprKind::BoolLiteral:
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(((BoolLiteralExprNode *)expr)->data ? "true" : "false"));
 							break;
 						case ExprKind::NullptrLiteral:
 							break;
-						case ExprKind::Id:
+						case ExprKind::Id: {
+							IdExprNode *idExpr = (IdExprNode *)expr;
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(idExpr->name));
+
+							if (idExpr->templateArgs) {
+								auto &templateArgs = *idExpr->templateArgs;
+
+								CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("<"));
+
+								curFrame.data = IdTemplateArgsDumpFrameData{ 0 };
+
+								curFrame.frameType = DumpFrameType::IdTemplateArgs;
+							}
 							break;
-						case ExprKind::InitializerList:
+						}
+						case ExprKind::InitializerList: {
+							InitializerListExprNode *initializerListExpr = (InitializerListExprNode *)expr;
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("{ "));
+
+							curFrame.data = InitializerListElementDumpFrameData{ 0 };
+
+							curFrame.frameType = DumpFrameType::InitializerListElement;
 							break;
+						}
 
 						case ExprKind::Unary: {
 							UnaryExprNode *unaryExpr = (UnaryExprNode *)expr;
@@ -258,6 +320,72 @@ loop:
 					break;
 			}
 			break;
+		}
+		case DumpFrameType::IdTemplateArgs: {
+			assert(astNode->astNodeType == AstNodeType::Expr);
+
+			IdExprNode *idExpr = (IdExprNode *)astNode;
+
+			IdTemplateArgsDumpFrameData &data = std::get<IdTemplateArgsDumpFrameData>(curFrame.data);
+
+			if (data.index >= idExpr->templateArgs->size()) {
+				CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(">"));
+				dumpContext->frames.popBack();
+
+				goto loop;
+			}
+
+			if (data.index) {
+				CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(", "));
+			}
+
+			{
+				DumpFrame dumpFrame;
+
+				dumpFrame.astNode = idExpr->templateArgs->at(data.index);
+
+				dumpFrame.frameType = DumpFrameType::Initial;
+
+				if (!dumpContext->frames.pushBack(std::move(dumpFrame)))
+					return false;
+			}
+
+			++data.index;
+
+			goto loop;
+		}
+		case DumpFrameType::InitializerListElement: {
+			assert(astNode->astNodeType == AstNodeType::Expr);
+
+			InitializerListExprNode *initializerListExpr = (InitializerListExprNode *)astNode;
+
+			InitializerListElementDumpFrameData &data = std::get<InitializerListElementDumpFrameData>(curFrame.data);
+
+			if (data.index >= initializerListExpr->elements.size()) {
+				CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" }"));
+				dumpContext->frames.popBack();
+
+				goto loop;
+			}
+
+			if (data.index) {
+				CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(", "));
+			}
+
+			{
+				DumpFrame dumpFrame;
+
+				dumpFrame.astNode = initializerListExpr->elements.at(data.index).castTo<AstNode>();
+
+				dumpFrame.frameType = DumpFrameType::Initial;
+
+				if (!dumpContext->frames.pushBack(std::move(dumpFrame)))
+					return false;
+			}
+
+			++data.index;
+
+			goto loop;
 		}
 		case DumpFrameType::UnaryOperand: {
 			assert(astNode->astNodeType == AstNodeType::Expr);
