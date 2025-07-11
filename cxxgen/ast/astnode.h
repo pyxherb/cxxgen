@@ -57,7 +57,8 @@ namespace cxxgen {
 		TypeName,
 		Stmt,
 		Expr,
-		AccessSpecifier
+		AccessSpecifier,
+		Declarator
 	};
 
 	class AstNode : public peff::SharedFromThis<AstNode> {
@@ -80,8 +81,6 @@ namespace cxxgen {
 
 	template <typename T>
 	using AstNodePtr = peff::SharedPtr<T>;
-
-	using IdStorage = std::variant<std::monostate, peff::String, std::string_view>;
 }
 
 #endif

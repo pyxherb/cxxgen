@@ -1,5 +1,5 @@
-#ifndef _CXXGEN_BASE_BASEDEFS_H_
-#define _CXXGEN_BASE_BASEDEFS_H_
+#ifndef _CXXGEN_BASEDEFS_H_
+#define _CXXGEN_BASEDEFS_H_
 
 #include <peff/base/basedefs.h>
 
