@@ -6,7 +6,9 @@
 
 namespace cxxgen {
 	enum class DumpFrameType {
-		InitializerListElement = 0,
+		Initial = 0,
+
+		InitializerListElement,
 
 		UnaryOperand,
 
@@ -78,7 +80,7 @@ namespace cxxgen {
 		CXXGEN_API ~DumpContext();
 	};
 
-	[[nodiscard]] CXXGEN_API bool dumpAstNode(DumpContext *dumpContext, AstNode *astNode);
+	[[nodiscard]] CXXGEN_API bool _dumpAstNode(DumpContext *dumpContext);
 }
 
 #endif
