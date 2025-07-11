@@ -23,7 +23,7 @@ namespace cxxgen {
 	};
 
 	struct InheritanceEntry {
-		InheritanceAccess accessModifier;
+		InheritanceAccess access;
 	};
 
 	class RootNode : public AbstractModuleNode {

@@ -11,6 +11,12 @@ namespace cxxgen {
 
 		CXXGEN_API AstBuilder(peff::Alloc *allocator, TranslationUnit *translationUnit);
 		CXXGEN_API ~AstBuilder();
+
+		CXXGEN_API AstNodePtr<RootNode> buildRoot();
+
+		CXXGEN_API AstNodePtr<NamespaceNode> buildNamespace();
+		CXXGEN_API AstNodePtr<ClassNode> buildClass();
+		CXXGEN_API AstNodePtr<StructNode> buildStruct();
 	};
 }
 

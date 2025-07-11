@@ -4,9 +4,10 @@ int main() {
 	cxxgen::TranslationUnit tu;
 
 	{
+		cxxgen::AstBuilder astBuilder(peff::getDefaultAlloc(), &tu);
 		cxxgen::AstNodePtr<cxxgen::RootNode> root;
 
-		if (!(root = cxxgen::makeAstNode<cxxgen::RootNode>(peff::getDefaultAlloc(), peff::getDefaultAlloc(), &tu))) {
+		if (!(root = astBuilder.buildRoot())) {
 			throw std::bad_alloc();
 		}
 	}
