@@ -4,12 +4,13 @@
 #include "typename.h"
 #include <peff/containers/string.h>
 #include <peff/containers/dynarray.h>
+#include <optional>
 
 namespace cxxgen {
 	class AbstractModuleNode : public AstNode {
 	public:
 		peff::String name;
-		peff::DynArray<AstNodePtr<AstNode>> body;
+		std::optional<peff::DynArray<AstNodePtr<AstNode>>> body;
 
 		CXXGEN_API AbstractModuleNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit, AstNodeType astNodeType);
 		CXXGEN_API virtual ~AbstractModuleNode();

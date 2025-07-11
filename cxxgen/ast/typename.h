@@ -18,7 +18,9 @@ namespace cxxgen {
 		Array,
 		Ref,
 		Rvalue,
-		Custom
+		Custom,
+		Auto,
+		Decltype
 	};
 
 	class TypeNameNode : public AstNode {

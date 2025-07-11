@@ -4,6 +4,7 @@
 #include "typename.h"
 #include <peff/containers/dynarray.h>
 #include <cstdint>
+#include <optional>
 
 namespace cxxgen {
 	enum class ExprKind : uint8_t {
@@ -81,6 +82,7 @@ namespace cxxgen {
 	class IdExprNode final : public ExprNode {
 	public:
 		peff::String name;
+		std::optional<peff::DynArray<AstNodePtr<AstNode>>> templateArgs;
 
 		CXXGEN_API IdExprNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
 		CXXGEN_API virtual ~IdExprNode();

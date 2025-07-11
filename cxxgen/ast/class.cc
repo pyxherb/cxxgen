@@ -2,7 +2,7 @@
 
 using namespace cxxgen;
 
-CXXGEN_API AbstractModuleNode::AbstractModuleNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit, AstNodeType astNodeType) : AstNode(astNodeType, selfAllocator, translationUnit), name(selfAllocator), body(selfAllocator) {
+CXXGEN_API AbstractModuleNode::AbstractModuleNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit, AstNodeType astNodeType) : AstNode(astNodeType, selfAllocator, translationUnit), name(selfAllocator) {
 }
 
 CXXGEN_API AbstractModuleNode::~AbstractModuleNode() {
