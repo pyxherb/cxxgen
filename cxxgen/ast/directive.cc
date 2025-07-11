@@ -2,10 +2,16 @@
 
 using namespace cxxgen;
 
-CXXGEN_API DirectiveNode::DirectiveNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : AstNode(AstNodeType::Directive, selfAllocator, translationUnit) {
+CXXGEN_API DirectiveNode::DirectiveNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : AstNode(AstNodeType::Directive, selfAllocator, translationUnit), name(selfAllocator) {
 }
 
 CXXGEN_API DirectiveNode::~DirectiveNode() {
+}
+
+CXXGEN_API IncludeDirectiveNode::IncludeDirectiveNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : AstNode(AstNodeType::Directive, selfAllocator, translationUnit), path(selfAllocator) {
+}
+
+CXXGEN_API IncludeDirectiveNode::~IncludeDirectiveNode() {
 }
 
 CXXGEN_API IfDirectiveNode::IfDirectiveNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : AstNode(AstNodeType::IfDirective, selfAllocator, translationUnit), body(selfAllocator) {

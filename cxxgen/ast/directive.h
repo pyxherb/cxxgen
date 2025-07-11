@@ -17,10 +17,20 @@ namespace cxxgen {
 
 	class DirectiveNode : public AstNode {
 	public:
+		peff::String name;
 		DirectiveArgs args;
 
 		CXXGEN_API DirectiveNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
 		CXXGEN_API virtual ~DirectiveNode();
+	};
+
+	class IncludeDirectiveNode : public AstNode {
+	public:
+		peff::String path;
+		bool isSystem = true;
+
+		CXXGEN_API IncludeDirectiveNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
+		CXXGEN_API virtual ~IncludeDirectiveNode();
 	};
 
 	class IfDirectiveNode : public AstNode {
