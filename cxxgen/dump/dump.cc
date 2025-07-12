@@ -373,16 +373,46 @@ loop:
 
 							break;
 						}
-						case ExprKind::Call:
+						case ExprKind::Call: {
+							CallExprNode *e = (CallExprNode *)expr;
+
+							curFrame.frameType = DumpFrameType::CallTarget;
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(e->target.castTo<AstNode>()));
 							break;
-						case ExprKind::Cast:
+						}
+						case ExprKind::Cast: {
+							CastExprNode *e = (CastExprNode *)expr;
+
+							curFrame.frameType = DumpFrameType::CastTargetType;
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(e->destType.castTo<AstNode>()));
 							break;
-						case ExprKind::New:
+						}
+						case ExprKind::New: {
+							NewExprNode *e = (NewExprNode *)expr;
+
+							curFrame.frameType = DumpFrameType::NewTargetType;
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("new "));
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(e->type.castTo<AstNode>()));
 							break;
+						}
 						case ExprKind::PlacementNew:
 							break;
-						case ExprKind::Ternary:
+						case ExprKind::Ternary: {
+							TernaryExprNode *e = (TernaryExprNode *)expr;
+
+							curFrame.frameType = DumpFrameType::TernaryCondition;
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(e->condition.castTo<AstNode>()));
 							break;
+						}
 						case ExprKind::TypeSizeof:
 							break;
 						case ExprKind::ExprSizeof:
@@ -392,6 +422,8 @@ loop:
 						case ExprKind::This:
 							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("this"));
 							break;
+						default:
+							std::terminate();
 					}
 					break;
 				}
@@ -912,6 +944,161 @@ loop:
 			dumpContext->frames.popBack();
 
 			CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(ptrMemberAccessExpr->rhs.castTo<AstNode>()));
+
+			goto loop;
+		}
+		case DumpFrameType::CallTarget: {
+			assert(astNode->astNodeType == AstNodeType::Expr);
+
+			CallExprNode *e = (CallExprNode *)astNode;
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+			dumpContext->frames.popBack();
+
+			{
+				DumpFrame dumpFrame;
+
+				dumpFrame.astNode = astNode->sharedFromThis();
+
+				dumpFrame.frameType = DumpFrameType::CallArgs;
+
+				dumpFrame.data = CallArgsDumpFrameData{ 0 };
+
+				if (!dumpContext->frames.pushBack(std::move(dumpFrame)))
+					return false;
+			}
+
+			goto loop;
+		}
+		case DumpFrameType::CallArgs: {
+			assert(astNode->astNodeType == AstNodeType::Expr);
+
+			CallExprNode *e = (CallExprNode *)astNode;
+
+			CallArgsDumpFrameData &data = std::get<CallArgsDumpFrameData>(curFrame.data);
+
+			if (data.index >= e->args.size()) {
+				CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+				dumpContext->frames.popBack();
+
+				goto loop;
+			}
+
+			if (data.index) {
+				CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(", "));
+			}
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(e->args.at(data.index).castTo<AstNode>()));
+
+			++data.index;
+
+			goto loop;
+		}
+		case DumpFrameType::CastTargetType: {
+			assert(astNode->astNodeType == AstNodeType::Expr);
+
+			CastExprNode *e = (CastExprNode *)astNode;
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+			curFrame.frameType = DumpFrameType::CastSource;
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(e->operand.castTo<AstNode>()));
+
+			goto loop;
+		}
+		case DumpFrameType::CastSource: {
+			assert(astNode->astNodeType == AstNodeType::Expr);
+
+			CastExprNode *e = (CastExprNode *)astNode;
+
+			dumpContext->frames.popBack();
+
+			goto loop;
+		}
+		case DumpFrameType::NewTargetType: {
+			assert(astNode->astNodeType == AstNodeType::Expr);
+
+			NewExprNode *e = (NewExprNode *)astNode;
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+			dumpContext->frames.popBack();
+
+			{
+				DumpFrame dumpFrame;
+
+				dumpFrame.astNode = astNode->sharedFromThis();
+
+				dumpFrame.frameType = DumpFrameType::CallArgs;
+
+				dumpFrame.data = CallArgsDumpFrameData{ 0 };
+
+				if (!dumpContext->frames.pushBack(std::move(dumpFrame)))
+					return false;
+			}
+
+			goto loop;
+		}
+		case DumpFrameType::NewArgs: {
+			assert(astNode->astNodeType == AstNodeType::Expr);
+
+			NewExprNode *e = (NewExprNode *)astNode;
+
+			NewArgsDumpFrameData &data = std::get<NewArgsDumpFrameData>(curFrame.data);
+
+			if (data.index >= e->args.size()) {
+				CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+				dumpContext->frames.popBack();
+
+				goto loop;
+			}
+
+			if (data.index) {
+				CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(", "));
+			}
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(e->args.at(data.index).castTo<AstNode>()));
+
+			++data.index;
+
+			goto loop;
+		}
+		case DumpFrameType::TernaryCondition: {
+			assert(astNode->astNodeType == AstNodeType::Expr);
+
+			TernaryExprNode *e = (TernaryExprNode *)astNode;
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" ? "));
+
+			curFrame.frameType = DumpFrameType::TernaryTrueBranch;
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(e->trueExpr.castTo<AstNode>()));
+
+			goto loop;
+		}
+		case DumpFrameType::TernaryTrueBranch: {
+			assert(astNode->astNodeType == AstNodeType::Expr);
+
+			TernaryExprNode *e = (TernaryExprNode *)astNode;
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" : "));
+
+			curFrame.frameType = DumpFrameType::TernaryFalseBranch;
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(e->falseExpr.castTo<AstNode>()));
+
+			goto loop;
+		}
+		case DumpFrameType::TernaryFalseBranch: {
+			assert(astNode->astNodeType == AstNodeType::Expr);
+
+			TernaryExprNode *e = (TernaryExprNode *)astNode;
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+			dumpContext->frames.popBack();
 
 			goto loop;
 		}

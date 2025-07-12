@@ -26,15 +26,15 @@ namespace cxxgen {
 		CallTarget,
 		CallArgs,
 
-		CastSource,
 		CastTargetType,
+		CastSource,
 
 		NewTargetType,
 		NewArgs,
 
-		PlacementNewLocation,
-		PlacementNewTargetType,
-		PlacementNewArgs,
+		//PlacementNewLocation,
+		//PlacementNewTargetType,
+		//PlacementNewArgs,
 
 		TernaryCondition,
 		TernaryTrueBranch,

@@ -45,7 +45,7 @@ int main() {
 
 			cxxgen::AstNodePtr<cxxgen::ExprNode> testQualifiedId;
 
-			if (!(testQualifiedId = astBuilder.buildQualifiedId(testId, std::size(testId)))) {
+			if (!(testQualifiedId = astBuilder.buildQualifiedIdExpr(testId, std::size(testId)))) {
 				throw std::bad_alloc();
 			}
 		}
