@@ -40,6 +40,19 @@ loop:
 	DumpFrame &curFrame = dumpContext->frames.back();
 	AstNode *astNode = curFrame.astNode.get();
 
+	auto pushInitialDumpFrame = [dumpContext](const AstNodePtr<AstNode> &astNode) -> bool {
+		{
+			DumpFrame dumpFrame;
+
+			dumpFrame.astNode = astNode;
+
+			dumpFrame.frameType = DumpFrameType::Initial;
+
+			if (!dumpContext->frames.pushBack(std::move(dumpFrame)))
+				return false;
+		}
+	};
+
 	switch (curFrame.frameType) {
 		case DumpFrameType::Initial: {
 			switch (astNode->astNodeType) {
@@ -318,16 +331,48 @@ loop:
 
 									goto loop;
 							}
+
 							break;
 						}
-						case ExprKind::Binary:
+						case ExprKind::Binary: {
+							BinaryExprNode *binaryExpr = (BinaryExprNode *)expr;
+
+							curFrame.frameType = DumpFrameType::BinaryLhs;
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(binaryExpr->lhs.castTo<AstNode>()));
 							break;
-						case ExprKind::ScopeResolve:
+						}
+						case ExprKind::ScopeResolve: {
+							ScopeResolveExprNode *scopeResolveExpr = (ScopeResolveExprNode *)expr;
+
+							curFrame.frameType = DumpFrameType::ScopeResolveLhs;
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(scopeResolveExpr->lhs.castTo<AstNode>()));
 							break;
-						case ExprKind::MemberAccess:
+						}
+						case ExprKind::MemberAccess: {
+							MemberAccessExprNode *memberAccessExpr = (MemberAccessExprNode *)expr;
+
+							curFrame.frameType = DumpFrameType::MemberAccessLhs;
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(memberAccessExpr->lhs.castTo<AstNode>()));
 							break;
-						case ExprKind::PtrMemberAccess:
+						}
+						case ExprKind::PtrMemberAccess: {
+							MemberAccessExprNode *ptrMemberAccessExpr = (MemberAccessExprNode *)expr;
+
+							curFrame.frameType = DumpFrameType::PtrMemberAccessLhs;
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(ptrMemberAccessExpr->lhs.castTo<AstNode>()));
+
 							break;
+						}
 						case ExprKind::Call:
 							break;
 						case ExprKind::Cast:
@@ -355,6 +400,8 @@ loop:
 				case AstNodeType::Declarator:
 					break;
 			}
+
+			dumpContext->frames.popBack();
 			break;
 		}
 		case DumpFrameType::IdTemplateArgs: {
@@ -375,16 +422,7 @@ loop:
 				CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(", "));
 			}
 
-			{
-				DumpFrame dumpFrame;
-
-				dumpFrame.astNode = idExpr->templateArgs->at(data.index);
-
-				dumpFrame.frameType = DumpFrameType::Initial;
-
-				if (!dumpContext->frames.pushBack(std::move(dumpFrame)))
-					return false;
-			}
+			CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(idExpr->templateArgs->at(data.index)));
 
 			++data.index;
 
@@ -408,16 +446,7 @@ loop:
 				CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(", "));
 			}
 
-			{
-				DumpFrame dumpFrame;
-
-				dumpFrame.astNode = initializerListExpr->elements.at(data.index).castTo<AstNode>();
-
-				dumpFrame.frameType = DumpFrameType::Initial;
-
-				if (!dumpContext->frames.pushBack(std::move(dumpFrame)))
-					return false;
-			}
+			CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(initializerListExpr->elements.at(data.index).castTo<AstNode>()));
 
 			++data.index;
 
@@ -493,9 +522,402 @@ loop:
 					dumpContext->frames.popBack();
 
 					goto loop;
+				default:
+					std::terminate();
 			}
+
+			break;
+		}
+		case DumpFrameType::BinaryLhs: {
+			assert(astNode->astNodeType == AstNodeType::Expr);
+
+			BinaryExprNode *binaryExpr = (BinaryExprNode *)astNode;
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+			switch (binaryExpr->binaryOp) {
+				case BinaryOp::Add:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" + "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+					break;
+				case BinaryOp::Sub:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" - "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+					break;
+				case BinaryOp::Mul:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" * "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+					break;
+				case BinaryOp::Div:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" / "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+					break;
+				case BinaryOp::Mod:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" % "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+					break;
+				case BinaryOp::And:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" & "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+					break;
+				case BinaryOp::Or:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" | "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+					break;
+				case BinaryOp::Xor:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" ^ "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+					break;
+				case BinaryOp::LAnd:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" && "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+					break;
+				case BinaryOp::LOr:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" || "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+					break;
+				case BinaryOp::Shl:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" << "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+					break;
+				case BinaryOp::Shr:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" >> "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+					break;
+				case BinaryOp::Eq:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" == "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+					break;
+				case BinaryOp::Neq:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" != "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+					break;
+				case BinaryOp::Lt:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" < "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+					break;
+				case BinaryOp::Gt:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" > "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+					break;
+				case BinaryOp::LtEq:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" <= "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+					break;
+				case BinaryOp::GtEq:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" >= "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+					break;
+				case BinaryOp::Cmp:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" <=> "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+					break;
+				case BinaryOp::Subscript:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("["));
+
+					break;
+				case BinaryOp::Assign:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" = "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+					break;
+				case BinaryOp::AddAssign:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" += "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+					break;
+				case BinaryOp::SubAssign:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" -= "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+					break;
+				case BinaryOp::MulAssign:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" *= "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+					break;
+				case BinaryOp::DivAssign:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" /= "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+					break;
+				case BinaryOp::ModAssign:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" %= "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+					break;
+				case BinaryOp::AndAssign:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" &= "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+					break;
+				case BinaryOp::OrAssign:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" |= "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+					break;
+				case BinaryOp::XorAssign:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" ^= "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+					break;
+				case BinaryOp::ShlAssign:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" <<= "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+					break;
+				case BinaryOp::ShrAssign:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" >>= "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+					break;
+				default:
+					std::terminate();
+			}
+
+			curFrame.frameType = DumpFrameType::BinaryRhs;
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(binaryExpr->rhs.castTo<AstNode>()));
+
+			goto loop;
+		}
+		case DumpFrameType::BinaryRhs: {
+			assert(astNode->astNodeType == AstNodeType::Expr);
+
+			BinaryExprNode *binaryExpr = (BinaryExprNode *)astNode;
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+			switch (binaryExpr->binaryOp) {
+				case BinaryOp::Add:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+					break;
+				case BinaryOp::Sub:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+					break;
+				case BinaryOp::Mul:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+					break;
+				case BinaryOp::Div:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+					break;
+				case BinaryOp::Mod:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+					break;
+				case BinaryOp::And:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+					break;
+				case BinaryOp::Or:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+					break;
+				case BinaryOp::Xor:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+					break;
+				case BinaryOp::LAnd:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+					break;
+				case BinaryOp::LOr:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+					break;
+				case BinaryOp::Shl:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+					break;
+				case BinaryOp::Shr:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+					break;
+				case BinaryOp::Eq:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+					break;
+				case BinaryOp::Neq:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+					break;
+				case BinaryOp::Lt:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+					break;
+				case BinaryOp::Gt:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+					break;
+				case BinaryOp::LtEq:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+					break;
+				case BinaryOp::GtEq:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+					break;
+				case BinaryOp::Cmp:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+					break;
+				case BinaryOp::Subscript:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("]"));
+
+					break;
+				case BinaryOp::Assign:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+					break;
+				case BinaryOp::AddAssign:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+					break;
+				case BinaryOp::SubAssign:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+					break;
+				case BinaryOp::MulAssign:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+					break;
+				case BinaryOp::DivAssign:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+					break;
+				case BinaryOp::ModAssign:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+					break;
+				case BinaryOp::AndAssign:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+					break;
+				case BinaryOp::OrAssign:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+					break;
+				case BinaryOp::XorAssign:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+					break;
+				case BinaryOp::ShlAssign:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+					break;
+				case BinaryOp::ShrAssign:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+					break;
+				default:
+					std::terminate();
+			}
+
+			curFrame.frameType = DumpFrameType::BinaryRhs;
+
+			dumpContext->frames.popBack();
+
+			goto loop;
+		}
+		case DumpFrameType::ScopeResolveLhs: {
+			assert(astNode->astNodeType == AstNodeType::Expr);
+
+			ScopeResolveExprNode *scopeResolveExpr = (ScopeResolveExprNode *)astNode;
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("::"));
+
+			dumpContext->frames.popBack();
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(scopeResolveExpr->rhs.castTo<AstNode>()));
+
+			goto loop;
+		}
+		case DumpFrameType::MemberAccessLhs: {
+			assert(astNode->astNodeType == AstNodeType::Expr);
+
+			MemberAccessExprNode *memberAccessExpr = (MemberAccessExprNode *)astNode;
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("."));
+
+			dumpContext->frames.popBack();
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(memberAccessExpr->rhs.castTo<AstNode>()));
+
+			goto loop;
+		}
+		case DumpFrameType::PtrMemberAccessLhs: {
+			assert(astNode->astNodeType == AstNodeType::Expr);
+
+			PtrMemberAccessExprNode *ptrMemberAccessExpr = (PtrMemberAccessExprNode *)astNode;
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("->"));
+
+			dumpContext->frames.popBack();
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(ptrMemberAccessExpr->rhs.castTo<AstNode>()));
+
+			goto loop;
 		}
 	}
+
+	std::terminate();
 }
 
 CXXGEN_API bool cxxgen::dumpAstNode(peff::Alloc *allocator, DumpWriter *writer, AstNode *astNode) {

@@ -147,6 +147,16 @@ namespace cxxgen {
 		Subscript,
 
 		Assign,
+		AddAssign,
+		SubAssign,
+		MulAssign,
+		DivAssign,
+		ModAssign,
+		AndAssign,
+		OrAssign,
+		XorAssign,
+		ShlAssign,
+		ShrAssign,
 	};
 
 	class BinaryExprNode final : public ExprNode {
