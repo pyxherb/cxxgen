@@ -78,14 +78,7 @@ namespace cxxgen {
 		DumpFrameType frameType;
 	};
 
-	struct DumpContext {
-		peff::List<DumpFrame> frames;
-		size_t indentLevel = 0;
-		DumpWriter *writer;
-
-		CXXGEN_API DumpContext(peff::Alloc *allocator, DumpWriter *dumpWriter);
-		CXXGEN_API ~DumpContext();
-	};
+	struct DumpContext;
 
 	[[nodiscard]] CXXGEN_API bool _dumpAstNode(DumpContext *dumpContext);
 	[[nodiscard]] CXXGEN_API bool dumpAstNode(peff::Alloc *allocator, DumpWriter *writer, AstNode *astNode);

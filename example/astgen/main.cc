@@ -1,4 +1,19 @@
 #include <cxxgen/builder.h>
+#include <cxxgen/dump/dump.h>
+
+class ANSIDumpWriter : public cxxgen::DumpWriter {
+public:
+	ANSIDumpWriter() {
+	}
+
+	virtual ~ANSIDumpWriter() {
+	}
+
+	virtual bool write(const char *src, size_t size) override {
+		fwrite(src, size, 1, stdout);
+		return true;
+	}
+};
 
 int main() {
 #ifndef NDEBUG
@@ -28,6 +43,7 @@ int main() {
 				throw std::bad_alloc();
 		}
 
+		cxxgen::AstNodePtr<cxxgen::ExprNode> testQualifiedId;
 		{
 			cxxgen::AstNodePtr<cxxgen::IdExprNode> testId[3];
 
@@ -43,11 +59,15 @@ int main() {
 				throw std::bad_alloc();
 			}
 
-			cxxgen::AstNodePtr<cxxgen::ExprNode> testQualifiedId;
-
 			if (!(testQualifiedId = astBuilder.buildQualifiedIdExpr(testId, std::size(testId)))) {
 				throw std::bad_alloc();
 			}
+		}
+
+		ANSIDumpWriter writer;
+
+		if (!cxxgen::dumpAstNode(peff::getDefaultAlloc(), &writer, testQualifiedId)) {
+			throw std::bad_alloc();
 		}
 	}
 

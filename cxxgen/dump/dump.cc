@@ -5,6 +5,18 @@ using namespace cxxgen;
 #define CXXGEN_RETURN_IF_WRITE_FAILED(s) \
 	if (!(s)) return false
 
+struct cxxgen::DumpContext final {
+	peff::RcObjectPtr<peff::Alloc> allocator;
+	peff::List<DumpFrame> frames;
+	size_t indentLevel = 0;
+	DumpWriter *writer;
+
+	CXXGEN_FORCEINLINE DumpContext(peff::Alloc *allocator, DumpWriter *dumpWriter) : allocator(allocator), writer(dumpWriter), frames(allocator) {
+	}
+	CXXGEN_FORCEINLINE ~DumpContext() {
+	}
+};
+
 static bool _fillIndentation(DumpContext *dumpContext, size_t level) {
 	for (size_t i = 0; i < level; ++i)
 		CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("\t"));
@@ -114,7 +126,7 @@ loop:
 					if (f->isInline)
 						CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("inline "));
 
-					CXXGEN_RETURN_IF_WRITE_FAILED(dumpAstNode(dumpContext->frames.allocator(), dumpContext->writer, f->returnType.castTo<AstNode>()));
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpAstNode(dumpContext->allocator.get(), dumpContext->writer, f->returnType.castTo<AstNode>()));
 
 					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" "));
 
@@ -127,7 +139,7 @@ loop:
 							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(", "));
 						}
 
-						CXXGEN_RETURN_IF_WRITE_FAILED(dumpAstNode(dumpContext->frames.allocator(), dumpContext->writer, f->params.at(i).type));
+						CXXGEN_RETURN_IF_WRITE_FAILED(dumpAstNode(dumpContext->allocator.get(), dumpContext->writer, f->params.at(i).type));
 
 						CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" "));
 
@@ -157,8 +169,30 @@ loop:
 					break;
 				case AstNodeType::TypeName:
 					break;
-				case AstNodeType::Stmt:
+				case AstNodeType::Stmt: {
+					StmtNode *stmt = (StmtNode *)astNode;
+
+					switch (stmt->stmtKind) {
+						case StmtKind::Expr: {
+							ExprStmtNode *s = (ExprStmtNode *)stmt;
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpAstNode(dumpContext->allocator.get(), dumpContext->writer, s->expr));
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(";"));
+							break;
+						}
+						case StmtKind::LocalVarDef: {
+							LocalVarDefStmtNode *s = (LocalVarDefStmtNode *)stmt;
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpAstNode(dumpContext->allocator.get(), dumpContext->writer, s->varDef));
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(";"));
+							break;
+						}
+					}
+
 					break;
+				}
 				case AstNodeType::Expr: {
 					ExprNode *expr = (ExprNode *)astNode;
 
@@ -169,7 +203,10 @@ loop:
 							int len = sprintf(s, "%d", ((IntLiteralExprNode *)expr)->data);
 
 							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(s, len));
-							break;
+
+							dumpContext->frames.popBack();
+
+							goto loop;
 						}
 						case ExprKind::LongLiteral: {
 							char s[22];
@@ -177,7 +214,10 @@ loop:
 							int len = sprintf(s, "%ldL", ((LongLiteralExprNode *)expr)->data);
 
 							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(s, len));
-							break;
+
+							dumpContext->frames.popBack();
+
+							goto loop;
 						}
 						case ExprKind::UIntLiteral: {
 							char s[13];
@@ -185,7 +225,10 @@ loop:
 							int len = sprintf(s, "%uU", ((IntLiteralExprNode *)expr)->data);
 
 							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(s, len));
-							break;
+
+							dumpContext->frames.popBack();
+
+							goto loop;
 						}
 						case ExprKind::ULongLiteral: {
 							char s[23];
@@ -193,22 +236,33 @@ loop:
 							int len = sprintf(s, "%luLU", ((LongLiteralExprNode *)expr)->data);
 
 							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(s, len));
-							break;
+
+							dumpContext->frames.popBack();
+
+							goto loop;
 						}
 						case ExprKind::CharLiteral:
 							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(&(((CharLiteralExprNode *)expr)->data), 1));
 
-							break;
+							dumpContext->frames.popBack();
+
+							goto loop;
 						case ExprKind::StringLiteral:
 							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(((StringLiteralExprNode *)expr)->data));
-							break;
+
+							dumpContext->frames.popBack();
+
+							goto loop;
 						case ExprKind::FloatLiteral: {
 							char s[32];
 
 							int len = snprintf(s, sizeof(s), "%.8g", ((FloatLiteralExprNode *)expr)->data);
 
 							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(s, len));
-							break;
+
+							dumpContext->frames.popBack();
+
+							goto loop;
 						}
 						case ExprKind::DoubleLiteral: {
 							char s[64];
@@ -216,13 +270,22 @@ loop:
 							int len = snprintf(s, sizeof(s), "%.17g", ((FloatLiteralExprNode *)expr)->data);
 
 							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(s, len));
-							break;
+
+							dumpContext->frames.popBack();
+
+							goto loop;
 						}
 						case ExprKind::BoolLiteral:
 							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(((BoolLiteralExprNode *)expr)->data ? "true" : "false"));
-							break;
+
+							dumpContext->frames.popBack();
+
+							goto loop;
 						case ExprKind::NullptrLiteral:
-							break;
+
+							dumpContext->frames.popBack();
+
+							goto loop;
 						case ExprKind::Id: {
 							IdExprNode *idExpr = (IdExprNode *)expr;
 
@@ -236,8 +299,11 @@ loop:
 								curFrame.data = IdTemplateArgsDumpFrameData{ 0 };
 
 								curFrame.frameType = DumpFrameType::IdTemplateArgs;
+							} else {
+								dumpContext->frames.popBack();
 							}
-							break;
+
+							goto loop;
 						}
 						case ExprKind::InitializerList: {
 							InitializerListExprNode *initializerListExpr = (InitializerListExprNode *)expr;
@@ -247,7 +313,8 @@ loop:
 							curFrame.data = InitializerListElementDumpFrameData{ 0 };
 
 							curFrame.frameType = DumpFrameType::InitializerListElement;
-							break;
+
+							goto loop;
 						}
 
 						case ExprKind::Unary: {
@@ -350,7 +417,8 @@ loop:
 							curFrame.frameType = DumpFrameType::ScopeResolveLhs;
 
 							CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(scopeResolveExpr->lhs.castTo<AstNode>()));
-							break;
+
+							goto loop;
 						}
 						case ExprKind::MemberAccess: {
 							MemberAccessExprNode *memberAccessExpr = (MemberAccessExprNode *)expr;
@@ -379,7 +447,8 @@ loop:
 							curFrame.frameType = DumpFrameType::CallTarget;
 
 							CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(e->target.castTo<AstNode>()));
-							break;
+
+							goto loop;
 						}
 						case ExprKind::Cast: {
 							CastExprNode *e = (CastExprNode *)expr;
@@ -399,7 +468,8 @@ loop:
 							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("new "));
 
 							CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(e->type.castTo<AstNode>()));
-							break;
+
+							goto loop;
 						}
 						case ExprKind::PlacementNew:
 							break;
@@ -411,7 +481,8 @@ loop:
 							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
 
 							CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(e->condition.castTo<AstNode>()));
-							break;
+
+							goto loop;
 						}
 						case ExprKind::TypeSizeof:
 							break;
@@ -421,7 +492,10 @@ loop:
 							break;
 						case ExprKind::This:
 							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("this"));
-							break;
+
+							dumpContext->frames.popBack();
+
+							goto loop;
 						default:
 							std::terminate();
 					}
@@ -431,9 +505,10 @@ loop:
 					break;
 				case AstNodeType::Declarator:
 					break;
+				default:
+					std::terminate();
 			}
 
-			dumpContext->frames.popBack();
 			break;
 		}
 		case DumpFrameType::IdTemplateArgs: {
@@ -1102,6 +1177,8 @@ loop:
 
 			goto loop;
 		}
+		default:
+			std::terminate();
 	}
 
 	std::terminate();

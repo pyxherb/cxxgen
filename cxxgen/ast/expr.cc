@@ -2,7 +2,7 @@
 
 using namespace cxxgen;
 
-CXXGEN_API ExprNode::ExprNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit, ExprKind exprKind) : AstNode(AstNodeType::IfndefDirective, selfAllocator, translationUnit), exprKind(exprKind) {
+CXXGEN_API ExprNode::ExprNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit, ExprKind exprKind) : AstNode(AstNodeType::Expr, selfAllocator, translationUnit), exprKind(exprKind) {
 }
 
 CXXGEN_API ExprNode::~ExprNode() {
@@ -16,7 +16,7 @@ CXXGEN_API NullptrLiteralExprNode::NullptrLiteralExprNode(peff::Alloc *selfAlloc
 
 CXXGEN_API NullptrLiteralExprNode::~NullptrLiteralExprNode() {}
 
-CXXGEN_API IdExprNode::IdExprNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : ExprNode(selfAllocator, translationUnit, ExprKind::NullptrLiteral), name(selfAllocator) {}
+CXXGEN_API IdExprNode::IdExprNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : ExprNode(selfAllocator, translationUnit, ExprKind::Id), name(selfAllocator) {}
 
 CXXGEN_API IdExprNode::~IdExprNode() {}
 

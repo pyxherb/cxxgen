@@ -29,6 +29,10 @@ namespace cxxgen {
 		CXXGEN_API AstNodePtr<ScopeResolveExprNode> createScopeResolveExpr();
 
 		CXXGEN_API AstNodePtr<ExprNode> buildQualifiedIdExpr(AstNodePtr<IdExprNode> *ids, size_t nIds);
+
+		CXXGEN_API AstNodePtr<BinaryExprNode> createBinaryExpr();
+
+		CXXGEN_API AstNodePtr<BinaryExprNode> buildBinaryExpr(BinaryOp binaryOp, AstNodePtr<ExprNode> lhs, AstNodePtr<ExprNode> rhs);
 	};
 }
 
