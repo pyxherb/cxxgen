@@ -145,6 +145,22 @@ CXXGEN_API AstNodePtr<IfStmtNode> AstBuilder::createIfStmt() {
 	return cxxgen::makeAstNode<cxxgen::IfStmtNode>(allocator.get(), allocator.get(), translationUnit);
 }
 
+CXXGEN_API AstNodePtr<ExprStmtNode> AstBuilder::createExprStmt() {
+	return cxxgen::makeAstNode<cxxgen::ExprStmtNode>(allocator.get(), allocator.get(), translationUnit);
+}
+
+CXXGEN_API AstNodePtr<ExprStmtNode> AstBuilder::buildExprStmt(AstNodePtr<ExprNode> expr) {
+	auto p = createExprStmt();
+
+	if (!p) {
+		return {};
+	}
+
+	p->expr = expr;
+
+	return p;
+}
+
 CXXGEN_API AstNodePtr<IfStmtNode> AstBuilder::buildIfStmt(AstNodePtr<ExprNode> condition, AstNodePtr<StmtNode> trueBranch) {
 	auto p = createIfStmt();
 

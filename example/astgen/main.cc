@@ -73,12 +73,21 @@ int main() {
 		cxxgen::AstNodePtr<cxxgen::IfStmtNode> ifStmt;
 
 		cxxgen::AstNodePtr<cxxgen::BlockStmtNode> blockStmt;
+		cxxgen::AstNodePtr<cxxgen::ExprStmtNode> exprStmt;
 
 		if (!(blockStmt = astBuilder.createBlockStmt())) {
 			throw std::bad_alloc();
 		}
 
 		if (!(ifStmt = astBuilder.buildIfStmt(testQualifiedId, blockStmt.castTo<cxxgen::StmtNode>(), blockStmt.castTo<cxxgen::StmtNode>()))) {
+			throw std::bad_alloc();
+		}
+
+		if (!(exprStmt = astBuilder.buildExprStmt(testQualifiedId))) {
+			throw std::bad_alloc();
+		}
+
+		if (!blockStmt->body.pushBack(exprStmt.castTo<cxxgen::StmtNode>())) {
 			throw std::bad_alloc();
 		}
 

@@ -38,6 +38,10 @@ namespace cxxgen {
 
 		CXXGEN_API AstNodePtr<BinaryExprNode> buildBinaryExpr(BinaryOp binaryOp, AstNodePtr<ExprNode> lhs, AstNodePtr<ExprNode> rhs);
 
+		CXXGEN_API AstNodePtr<ExprStmtNode> createExprStmt();
+
+		CXXGEN_API AstNodePtr<ExprStmtNode> buildExprStmt(AstNodePtr<ExprNode> expr);
+
 		CXXGEN_API AstNodePtr<IfStmtNode> createIfStmt();
 
 		CXXGEN_API AstNodePtr<IfStmtNode> buildIfStmt(AstNodePtr<ExprNode> condition, AstNodePtr<StmtNode> trueBranch);

@@ -63,6 +63,8 @@ loop:
 			if (!dumpContext->frames.pushBack(std::move(dumpFrame)))
 				return false;
 		}
+
+		return true;
 	};
 
 	switch (curFrame.frameType) {
@@ -180,6 +182,8 @@ loop:
 
 							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(";"));
 
+							dumpContext->frames.popBack();
+
 							goto loop;
 						}
 						case StmtKind::LocalVarDef: {
@@ -188,6 +192,8 @@ loop:
 							CXXGEN_RETURN_IF_WRITE_FAILED(dumpAstNode(dumpContext->allocator.get(), dumpContext->writer, s->varDef));
 
 							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(";"));
+
+							dumpContext->frames.popBack();
 
 							goto loop;
 						}
@@ -221,6 +227,21 @@ loop:
 									CXXGEN_RETURN_IF_WRITE_FAILED(_fillIndentation(dumpContext, dumpContext->indentLevel));
 
 									CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(s->trueBranch.castTo<AstNode>()));
+							}
+
+							goto loop;
+						}
+						case StmtKind::For: {
+							ForStmtNode *s = (ForStmtNode *)stmt;
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("for ("));
+
+							curFrame.frameType = DumpFrameType::ForInitStmt;
+
+							if (s->initStmt) {
+								CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(s->initStmt.castTo<AstNode>()));
+							} else {
+								CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(";"));
 							}
 
 							goto loop;
@@ -681,6 +702,9 @@ loop:
 
 			BlockBodyDumpFrameData &data = std::get<BlockBodyDumpFrameData>(curFrame.data);
 
+			if (data.index)
+				CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("\n"));
+
 			if (data.index >= s->body.size()) {
 				--dumpContext->indentLevel;
 
@@ -692,13 +716,65 @@ loop:
 				goto loop;
 			}
 
-			CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("\n"));
-
 			CXXGEN_RETURN_IF_WRITE_FAILED(_fillIndentation(dumpContext, dumpContext->indentLevel));
 
 			CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(s->body.at(data.index).castTo<AstNode>()));
 
 			++data.index;
+
+			goto loop;
+		}
+		case DumpFrameType::ForInitStmt: {
+			assert(astNode->astNodeType == AstNodeType::Stmt);
+
+			ForStmtNode *s = (ForStmtNode *)astNode;
+
+			if (s->condition) {
+				CXXGEN_RETURN_IF_WRITE_FAILED(dumpAstNode(dumpContext->allocator.get(), dumpContext->writer, s->condition));
+			}
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(";"));
+
+			if (s->step) {
+				CXXGEN_RETURN_IF_WRITE_FAILED(dumpAstNode(dumpContext->allocator.get(), dumpContext->writer, s->step));
+			}
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+			switch (s->body->stmtKind) {
+				case StmtKind::Block:
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(s->body.castTo<AstNode>()));
+
+					break;
+				default:
+					++dumpContext->indentLevel;
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("\n"));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(_fillIndentation(dumpContext, dumpContext->indentLevel));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(s->body.castTo<AstNode>()));
+			}
+
+			curFrame.frameType = DumpFrameType::ForBody;
+
+			goto loop;
+		}
+		case DumpFrameType::ForBody: {
+			assert(astNode->astNodeType == AstNodeType::Stmt);
+
+			ForStmtNode *s = (ForStmtNode *)astNode;
+
+			switch (s->body->stmtKind) {
+				case StmtKind::Block:
+					break;
+				default:
+					--dumpContext->indentLevel;
+			}
+
+			dumpContext->frames.popBack();
 
 			goto loop;
 		}

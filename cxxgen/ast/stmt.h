@@ -33,7 +33,7 @@ namespace cxxgen {
 
 	class ExprStmtNode : public StmtNode {
 	public:
-		AstNodePtr<ExprStmtNode> expr;
+		AstNodePtr<ExprNode> expr;
 
 		CXXGEN_API ExprStmtNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
 		CXXGEN_API virtual ~ExprStmtNode();

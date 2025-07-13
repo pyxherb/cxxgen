@@ -13,6 +13,9 @@ namespace cxxgen {
 		IfTrueBranch,
 		IfFalseBranch,
 
+		ForInitStmt,
+		ForBody,
+
 		IdTemplateArgs,
 
 		InitializerListElement,
