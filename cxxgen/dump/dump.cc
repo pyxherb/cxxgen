@@ -397,6 +397,8 @@ loop:
 									curFrame.frameType = DumpFrameType::UnaryOperand;
 
 									goto loop;
+								default:
+									std::terminate();
 							}
 
 							break;
@@ -409,7 +411,8 @@ loop:
 							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
 
 							CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(binaryExpr->lhs.castTo<AstNode>()));
-							break;
+
+							goto loop;
 						}
 						case ExprKind::ScopeResolve: {
 							ScopeResolveExprNode *scopeResolveExpr = (ScopeResolveExprNode *)expr;
@@ -428,7 +431,8 @@ loop:
 							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
 
 							CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(memberAccessExpr->lhs.castTo<AstNode>()));
-							break;
+
+							goto loop;
 						}
 						case ExprKind::PtrMemberAccess: {
 							MemberAccessExprNode *ptrMemberAccessExpr = (MemberAccessExprNode *)expr;
@@ -439,7 +443,7 @@ loop:
 
 							CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(ptrMemberAccessExpr->lhs.castTo<AstNode>()));
 
-							break;
+							goto loop;
 						}
 						case ExprKind::Call: {
 							CallExprNode *e = (CallExprNode *)expr;
@@ -458,7 +462,8 @@ loop:
 							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
 
 							CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(e->destType.castTo<AstNode>()));
-							break;
+
+							goto loop;
 						}
 						case ExprKind::New: {
 							NewExprNode *e = (NewExprNode *)expr;
@@ -841,8 +846,6 @@ loop:
 			assert(astNode->astNodeType == AstNodeType::Expr);
 
 			BinaryExprNode *binaryExpr = (BinaryExprNode *)astNode;
-
-			CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
 
 			switch (binaryExpr->binaryOp) {
 				case BinaryOp::Add:

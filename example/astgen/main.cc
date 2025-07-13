@@ -64,9 +64,15 @@ int main() {
 			}
 		}
 
+		cxxgen::AstNodePtr<cxxgen::BinaryExprNode> binaryExpr;
+
+		if (!(binaryExpr = astBuilder.buildBinaryExpr(cxxgen::BinaryOp::Add, testQualifiedId, testQualifiedId))) {
+			throw std::bad_alloc();
+		}
+
 		ANSIDumpWriter writer;
 
-		if (!cxxgen::dumpAstNode(peff::getDefaultAlloc(), &writer, testQualifiedId)) {
+		if (!cxxgen::dumpAstNode(peff::getDefaultAlloc(), &writer, binaryExpr)) {
 			throw std::bad_alloc();
 		}
 	}
