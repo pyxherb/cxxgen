@@ -8,6 +8,9 @@ namespace cxxgen {
 	enum class DumpFrameType {
 		Initial = 0,
 
+		IfTrueBranch,
+		IfFalseBranch,
+
 		IdTemplateArgs,
 
 		InitializerListElement,

@@ -189,6 +189,34 @@ loop:
 							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(";"));
 							break;
 						}
+						case StmtKind::If: {
+							IfStmtNode *s = (IfStmtNode *)stmt;
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("if "));
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpAstNode(dumpContext->allocator.get(), dumpContext->writer, s->condition));
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+
+							++dumpContext->indentLevel;
+
+							curFrame.frameType = DumpFrameType::IfTrueBranch;
+
+							if (s->trueBranch->stmtKind == StmtKind::Block) {
+								CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" "));
+
+								CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(s->trueBranch.castTo<AstNode>()));
+							} else {
+								CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("\n"));
+
+								CXXGEN_RETURN_IF_WRITE_FAILED(_fillIndentation(dumpContext, dumpContext->indentLevel));
+
+								CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(s->trueBranch.castTo<AstNode>()));
+							}
+							break;
+						}
 					}
 
 					break;
@@ -557,6 +585,48 @@ loop:
 			}
 
 			break;
+		}
+		case DumpFrameType::IfTrueBranch: {
+			assert(astNode->astNodeType == AstNodeType::Stmt);
+
+			IfStmtNode *s = (IfStmtNode *)astNode;
+
+			if (s->elseBranch) {
+				curFrame.frameType = DumpFrameType::IfFalseBranch;
+
+				if (s->trueBranch->stmtKind == StmtKind::Block) {
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" else "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(s->trueBranch.castTo<AstNode>()));
+				} else {
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("\n"));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("else"));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("\n"));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(_fillIndentation(dumpContext, dumpContext->indentLevel));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(s->trueBranch.castTo<AstNode>()));
+				}
+
+				goto loop;
+			} else {
+				dumpContext->frames.popBack();
+
+				goto loop;
+			}
+
+			goto loop;
+		}
+		case DumpFrameType::IfFalseBranch: {
+			assert(astNode->astNodeType == AstNodeType::Stmt);
+
+			IfStmtNode *s = (IfStmtNode *)astNode;
+
+			dumpContext->frames.popBack();
+
+			goto loop;
 		}
 		case DumpFrameType::IdTemplateArgs: {
 			assert(astNode->astNodeType == AstNodeType::Expr);
