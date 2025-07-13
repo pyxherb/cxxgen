@@ -204,18 +204,23 @@ loop:
 
 							curFrame.frameType = DumpFrameType::IfTrueBranch;
 
-							if (s->trueBranch->stmtKind == StmtKind::Block) {
-								CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" "));
+							switch (s->trueBranch->stmtKind) {
+								case StmtKind::Block:
+								case StmtKind::If:
+								case StmtKind::IfConstexpr:
+									CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" "));
 
-								CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(s->trueBranch.castTo<AstNode>()));
-							} else {
-								++dumpContext->indentLevel;
+									CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(s->trueBranch.castTo<AstNode>()));
 
-								CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("\n"));
+									break;
+								default:
+									++dumpContext->indentLevel;
 
-								CXXGEN_RETURN_IF_WRITE_FAILED(_fillIndentation(dumpContext, dumpContext->indentLevel));
+									CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("\n"));
 
-								CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(s->trueBranch.castTo<AstNode>()));
+									CXXGEN_RETURN_IF_WRITE_FAILED(_fillIndentation(dumpContext, dumpContext->indentLevel));
+
+									CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(s->trueBranch.castTo<AstNode>()));
 							}
 
 							goto loop;
@@ -607,23 +612,39 @@ loop:
 
 			IfStmtNode *s = (IfStmtNode *)astNode;
 
+			switch (s->trueBranch->stmtKind) {
+				case StmtKind::Block:
+				case StmtKind::If:
+				case StmtKind::IfConstexpr:
+					break;
+				default:
+					--dumpContext->indentLevel;
+			}
+
 			if (s->elseBranch) {
 				curFrame.frameType = DumpFrameType::IfFalseBranch;
 
-				if (s->trueBranch->stmtKind == StmtKind::Block) {
-					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" else "));
+				switch (s->elseBranch->stmtKind) {
+					case StmtKind::Block:
+					case StmtKind::If:
+					case StmtKind::IfConstexpr:
+						CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" else "));
 
-					CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(s->trueBranch.castTo<AstNode>()));
-				} else {
-					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("\n"));
+						CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(s->elseBranch.castTo<AstNode>()));
 
-					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("else"));
+						break;
+					default:
+						CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("\n"));
 
-					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("\n"));
+						CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("else"));
 
-					CXXGEN_RETURN_IF_WRITE_FAILED(_fillIndentation(dumpContext, dumpContext->indentLevel));
+						CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("\n"));
 
-					CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(s->trueBranch.castTo<AstNode>()));
+						++dumpContext->indentLevel;
+
+						CXXGEN_RETURN_IF_WRITE_FAILED(_fillIndentation(dumpContext, dumpContext->indentLevel));
+
+						CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(s->elseBranch.castTo<AstNode>()));
 				}
 
 				goto loop;
@@ -639,6 +660,15 @@ loop:
 			assert(astNode->astNodeType == AstNodeType::Stmt);
 
 			IfStmtNode *s = (IfStmtNode *)astNode;
+
+			switch (s->elseBranch->stmtKind) {
+				case StmtKind::Block:
+				case StmtKind::If:
+				case StmtKind::IfConstexpr:
+					break;
+				default:
+					--dumpContext->indentLevel;
+			}
 
 			dumpContext->frames.popBack();
 
