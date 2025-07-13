@@ -70,9 +70,21 @@ int main() {
 			throw std::bad_alloc();
 		}
 
+		cxxgen::AstNodePtr<cxxgen::IfStmtNode> ifStmt;
+
+		cxxgen::AstNodePtr<cxxgen::BlockStmtNode> blockStmt;
+
+		if (!(blockStmt = astBuilder.createBlockStmt())) {
+			throw std::bad_alloc();
+		}
+
+		if (!(ifStmt = astBuilder.buildIfStmt(testQualifiedId, blockStmt.castTo<cxxgen::StmtNode>(), blockStmt.castTo<cxxgen::StmtNode>()))) {
+			throw std::bad_alloc();
+		}
+
 		ANSIDumpWriter writer;
 
-		if (!cxxgen::dumpAstNode(peff::getDefaultAlloc(), &writer, binaryExpr)) {
+		if (!cxxgen::dumpAstNode(peff::getDefaultAlloc(), &writer, ifStmt)) {
 			throw std::bad_alloc();
 		}
 	}

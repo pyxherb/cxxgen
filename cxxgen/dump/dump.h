@@ -8,6 +8,8 @@ namespace cxxgen {
 	enum class DumpFrameType {
 		Initial = 0,
 
+		BlockBody,
+
 		IfTrueBranch,
 		IfFalseBranch,
 
@@ -49,6 +51,10 @@ namespace cxxgen {
 		AlignofOperand,
 	};
 
+	struct BlockBodyDumpFrameData {
+		size_t index;
+	};
+
 	struct IdTemplateArgsDumpFrameData {
 		size_t index;
 	};
@@ -72,6 +78,7 @@ namespace cxxgen {
 	struct DumpFrame {
 		std::variant<
 			std::monostate,
+			BlockBodyDumpFrameData,
 			IdTemplateArgsDumpFrameData,
 			InitializerListElementDumpFrameData,
 			CallArgsDumpFrameData,

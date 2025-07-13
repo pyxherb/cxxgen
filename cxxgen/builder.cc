@@ -140,3 +140,41 @@ CXXGEN_API AstNodePtr<BinaryExprNode> AstBuilder::buildBinaryExpr(BinaryOp binar
 
 	return p;
 }
+
+CXXGEN_API AstNodePtr<IfStmtNode> AstBuilder::createIfStmt() {
+	return cxxgen::makeAstNode<cxxgen::IfStmtNode>(allocator.get(), allocator.get(), translationUnit);
+}
+
+CXXGEN_API AstNodePtr<IfStmtNode> AstBuilder::buildIfStmt(AstNodePtr<ExprNode> condition, AstNodePtr<StmtNode> trueBranch) {
+	auto p = createIfStmt();
+
+	if (!p) {
+		return {};
+	}
+
+	p->condition = condition;
+
+	p->trueBranch = trueBranch;
+
+	return p;
+}
+
+CXXGEN_API AstNodePtr<IfStmtNode> AstBuilder::buildIfStmt(AstNodePtr<ExprNode> condition, AstNodePtr<StmtNode> trueBranch, AstNodePtr<StmtNode> elseBranch) {
+	auto p = createIfStmt();
+
+	if (!p) {
+		return {};
+	}
+
+	p->condition = condition;
+
+	p->trueBranch = trueBranch;
+
+	p->elseBranch = elseBranch;
+
+	return p;
+}
+
+CXXGEN_API AstNodePtr<BlockStmtNode> AstBuilder::createBlockStmt() {
+	return cxxgen::makeAstNode<cxxgen::BlockStmtNode>(allocator.get(), allocator.get(), translationUnit);
+}

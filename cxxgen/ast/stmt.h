@@ -49,7 +49,7 @@ namespace cxxgen {
 
 	class IfStmtNode : public StmtNode {
 	public:
-		AstNodePtr<ExprStmtNode> condition;
+		AstNodePtr<ExprNode> condition;
 		AstNodePtr<StmtNode> trueBranch, elseBranch;
 
 		CXXGEN_API IfStmtNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);

@@ -179,7 +179,8 @@ loop:
 							CXXGEN_RETURN_IF_WRITE_FAILED(dumpAstNode(dumpContext->allocator.get(), dumpContext->writer, s->expr));
 
 							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(";"));
-							break;
+
+							goto loop;
 						}
 						case StmtKind::LocalVarDef: {
 							LocalVarDefStmtNode *s = (LocalVarDefStmtNode *)stmt;
@@ -187,7 +188,8 @@ loop:
 							CXXGEN_RETURN_IF_WRITE_FAILED(dumpAstNode(dumpContext->allocator.get(), dumpContext->writer, s->varDef));
 
 							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(";"));
-							break;
+
+							goto loop;
 						}
 						case StmtKind::If: {
 							IfStmtNode *s = (IfStmtNode *)stmt;
@@ -200,8 +202,6 @@ loop:
 
 							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
 
-							++dumpContext->indentLevel;
-
 							curFrame.frameType = DumpFrameType::IfTrueBranch;
 
 							if (s->trueBranch->stmtKind == StmtKind::Block) {
@@ -209,13 +209,29 @@ loop:
 
 								CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(s->trueBranch.castTo<AstNode>()));
 							} else {
+								++dumpContext->indentLevel;
+
 								CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("\n"));
 
 								CXXGEN_RETURN_IF_WRITE_FAILED(_fillIndentation(dumpContext, dumpContext->indentLevel));
 
 								CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(s->trueBranch.castTo<AstNode>()));
 							}
-							break;
+
+							goto loop;
+						}
+						case StmtKind::Block: {
+							BlockStmtNode *s = (BlockStmtNode *)stmt;
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("{\n"));
+
+							++dumpContext->indentLevel;
+
+							curFrame.frameType = DumpFrameType::BlockBody;
+
+							curFrame.data = BlockBodyDumpFrameData{ 0 };
+
+							goto loop;
 						}
 					}
 
@@ -625,6 +641,34 @@ loop:
 			IfStmtNode *s = (IfStmtNode *)astNode;
 
 			dumpContext->frames.popBack();
+
+			goto loop;
+		}
+		case DumpFrameType::BlockBody: {
+			assert(astNode->astNodeType == AstNodeType::Stmt);
+
+			BlockStmtNode *s = (BlockStmtNode *)astNode;
+
+			BlockBodyDumpFrameData &data = std::get<BlockBodyDumpFrameData>(curFrame.data);
+
+			if (data.index >= s->body.size()) {
+				--dumpContext->indentLevel;
+
+				CXXGEN_RETURN_IF_WRITE_FAILED(_fillIndentation(dumpContext, dumpContext->indentLevel));
+
+				CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("}"));
+				dumpContext->frames.popBack();
+
+				goto loop;
+			}
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("\n"));
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(_fillIndentation(dumpContext, dumpContext->indentLevel));
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(s->body.at(data.index).castTo<AstNode>()));
+
+			++data.index;
 
 			goto loop;
 		}
