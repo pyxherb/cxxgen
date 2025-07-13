@@ -328,11 +328,15 @@ loop:
 
 									curFrame.frameType = DumpFrameType::UnaryOperand;
 
+									CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(unaryExpr->operand.castTo<AstNode>()));
+
 									goto loop;
 								case UnaryOp::IncBackward:
 									CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
 
 									curFrame.frameType = DumpFrameType::UnaryOperand;
+
+									CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(unaryExpr->operand.castTo<AstNode>()));
 
 									goto loop;
 								case UnaryOp::DecForward:
@@ -342,11 +346,15 @@ loop:
 
 									curFrame.frameType = DumpFrameType::UnaryOperand;
 
+									CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(unaryExpr->operand.castTo<AstNode>()));
+
 									goto loop;
 								case UnaryOp::DecBackward:
 									CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
 
 									curFrame.frameType = DumpFrameType::UnaryOperand;
+
+									CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(unaryExpr->operand.castTo<AstNode>()));
 
 									goto loop;
 								case UnaryOp::Plus:
@@ -356,6 +364,8 @@ loop:
 
 									curFrame.frameType = DumpFrameType::UnaryOperand;
 
+									CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(unaryExpr->operand.castTo<AstNode>()));
+
 									goto loop;
 								case UnaryOp::Negate:
 									CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("-"));
@@ -363,6 +373,8 @@ loop:
 									CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
 
 									curFrame.frameType = DumpFrameType::UnaryOperand;
+
+									CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(unaryExpr->operand.castTo<AstNode>()));
 
 									goto loop;
 								case UnaryOp::Not:
@@ -372,6 +384,8 @@ loop:
 
 									curFrame.frameType = DumpFrameType::UnaryOperand;
 
+									CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(unaryExpr->operand.castTo<AstNode>()));
+
 									goto loop;
 								case UnaryOp::LNot:
 									CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("!"));
@@ -379,6 +393,8 @@ loop:
 									CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
 
 									curFrame.frameType = DumpFrameType::UnaryOperand;
+
+									CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(unaryExpr->operand.castTo<AstNode>()));
 
 									goto loop;
 								case UnaryOp::Dereference:
@@ -388,6 +404,8 @@ loop:
 
 									curFrame.frameType = DumpFrameType::UnaryOperand;
 
+									CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(unaryExpr->operand.castTo<AstNode>()));
+
 									goto loop;
 								case UnaryOp::AddressOf:
 									CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("&"));
@@ -395,6 +413,8 @@ loop:
 									CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
 
 									curFrame.frameType = DumpFrameType::UnaryOperand;
+
+									CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(unaryExpr->operand.castTo<AstNode>()));
 
 									goto loop;
 								default:

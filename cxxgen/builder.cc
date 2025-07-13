@@ -103,6 +103,25 @@ CXXGEN_API AstNodePtr<ExprNode> AstBuilder::buildQualifiedIdExpr(AstNodePtr<IdEx
 	return e.castTo<ExprNode>();
 }
 
+CXXGEN_API AstNodePtr<UnaryExprNode> AstBuilder::createUnaryExpr() {
+	return cxxgen::makeAstNode<cxxgen::UnaryExprNode>(allocator.get(), allocator.get(), translationUnit);
+}
+
+CXXGEN_API AstNodePtr<UnaryExprNode> AstBuilder::buildUnaryExpr(UnaryOp binaryOp, AstNodePtr<ExprNode> operand) {
+	auto p = createUnaryExpr();
+
+	if (!p) {
+		return {};
+	}
+
+	p->unaryOp = binaryOp;
+
+	p->operand = operand;
+
+	return p;
+}
+
+
 CXXGEN_API AstNodePtr<BinaryExprNode> AstBuilder::createBinaryExpr() {
 	return cxxgen::makeAstNode<cxxgen::BinaryExprNode>(allocator.get(), allocator.get(), translationUnit);
 }
