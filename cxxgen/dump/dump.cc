@@ -219,6 +219,17 @@ loop:
 
 							goto loop;
 						}
+						case ExprKind::LongLongLiteral: {
+							char s[23];
+
+							int len = sprintf(s, "%ldLL", ((LongLiteralExprNode *)expr)->data);
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(s, len));
+
+							dumpContext->frames.popBack();
+
+							goto loop;
+						}
 						case ExprKind::UIntLiteral: {
 							char s[13];
 
@@ -233,7 +244,18 @@ loop:
 						case ExprKind::ULongLiteral: {
 							char s[23];
 
-							int len = sprintf(s, "%luLU", ((LongLiteralExprNode *)expr)->data);
+							int len = sprintf(s, "%luUL", ((LongLiteralExprNode *)expr)->data);
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(s, len));
+
+							dumpContext->frames.popBack();
+
+							goto loop;
+						}
+						case ExprKind::ULongLongLiteral: {
+							char s[24];
+
+							int len = sprintf(s, "%luULL", ((LongLiteralExprNode *)expr)->data);
 
 							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(s, len));
 

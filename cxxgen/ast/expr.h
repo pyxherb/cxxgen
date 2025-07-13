@@ -10,8 +10,10 @@ namespace cxxgen {
 	enum class ExprKind : uint8_t {
 		IntLiteral = 0,
 		LongLiteral,
+		LongLongLiteral,
 		UIntLiteral,
 		ULongLiteral,
+		ULongLongLiteral,
 		CharLiteral,
 		StringLiteral,
 		FloatLiteral,
@@ -58,8 +60,10 @@ namespace cxxgen {
 
 	using IntLiteralExprNode = LiteralExprNode<int, ExprKind::IntLiteral>;
 	using LongLiteralExprNode = LiteralExprNode<long, ExprKind::LongLiteral>;
+	using LongLongLiteralExprNode = LiteralExprNode<long long, ExprKind::LongLongLiteral>;
 	using UIntLiteralExprNode = LiteralExprNode<unsigned int, ExprKind::UIntLiteral>;
-	using ULongLiteralExprNode = LiteralExprNode<unsigned long long, ExprKind::ULongLiteral>;
+	using ULongLiteralExprNode = LiteralExprNode<unsigned long, ExprKind::ULongLiteral>;
+	using ULongLongLiteralExprNode = LiteralExprNode<unsigned long long, ExprKind::ULongLongLiteral>;
 	using CharLiteralExprNode = LiteralExprNode<char, ExprKind::CharLiteral>;
 	using FloatLiteralExprNode = LiteralExprNode<float, ExprKind::FloatLiteral>;
 	using DoubleLiteralExprNode = LiteralExprNode<double, ExprKind::DoubleLiteral>;
