@@ -14,11 +14,17 @@ namespace cxxgen {
 
 		CXXGEN_API AstNodePtr<RootNode> createRoot();
 
+		CXXGEN_API AstNodePtr<FnNode> createFn();
+
+		CXXGEN_API AstNodePtr<FnNode> buildFn(const std::string_view &name, AstNodePtr<TypeNameNode> returnType);
+
 		CXXGEN_API AstNodePtr<NamespaceNode> createNamespace();
 
 		CXXGEN_API AstNodePtr<ClassNode> createClass();
 
 		CXXGEN_API AstNodePtr<StructNode> createStruct();
+
+		CXXGEN_API AstNodePtr<VoidTypeNameNode> buildVoidTypeName();
 
 		CXXGEN_API AstNodePtr<IntLiteralExprNode> buildIntLiteralExpr(int data);
 

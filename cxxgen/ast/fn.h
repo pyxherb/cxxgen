@@ -4,6 +4,8 @@
 #include "typename.h"
 
 namespace cxxgen {
+	class BlockStmtNode;
+
 	class FnNode : public AstNode {
 	public:
 		peff::String name;
@@ -16,6 +18,8 @@ namespace cxxgen {
 		bool isFinal = false;
 		bool isVirtual = false;
 		bool isInline = false;
+
+		AstNodePtr<BlockStmtNode> body;
 
 		CXXGEN_API FnNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
 		CXXGEN_API virtual ~FnNode();

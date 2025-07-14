@@ -2,7 +2,7 @@
 
 using namespace cxxgen;
 
-CXXGEN_API TypeNameNode::TypeNameNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit, TypeNameKind typeNameKind) : AstNode(AstNodeType::IfndefDirective, selfAllocator, translationUnit), typeNameKind(typeNameKind) {
+CXXGEN_API TypeNameNode::TypeNameNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit, TypeNameKind typeNameKind) : AstNode(AstNodeType::TypeName, selfAllocator, translationUnit), typeNameKind(typeNameKind) {
 }
 
 CXXGEN_API TypeNameNode::~TypeNameNode() {

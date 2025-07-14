@@ -155,7 +155,13 @@ loop:
 
 					if (f->isNoexcept)
 						CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" noexcept"));
-					break;
+
+					if (f->body)
+						CXXGEN_RETURN_IF_WRITE_FAILED(dumpAstNode(dumpContext->allocator.get(), dumpContext->writer, f->body.castTo<AstNode>()));
+
+					dumpContext->frames.popBack();
+
+					goto loop;
 				}
 				case AstNodeType::Struct:
 					break;

@@ -13,6 +13,26 @@ CXXGEN_API AstNodePtr<RootNode> AstBuilder::createRoot() {
 	return cxxgen::makeAstNode<cxxgen::RootNode>(allocator.get(), allocator.get(), translationUnit);
 }
 
+CXXGEN_API AstNodePtr<FnNode> AstBuilder::createFn() {
+	return cxxgen::makeAstNode<cxxgen::FnNode>(allocator.get(), allocator.get(), translationUnit);
+}
+
+CXXGEN_API AstNodePtr<FnNode> AstBuilder::buildFn(const std::string_view &name, AstNodePtr<TypeNameNode> returnType) {
+	auto p = createFn();
+
+	if (!p) {
+		return {};
+	}
+
+	if (!p->name.build(name)) {
+		return {};
+	}
+
+	p->returnType = returnType;
+
+	return p;
+}
+
 CXXGEN_API AstNodePtr<NamespaceNode> AstBuilder::createNamespace() {
 	return cxxgen::makeAstNode<cxxgen::NamespaceNode>(allocator.get(), allocator.get(), translationUnit);
 }
@@ -23,6 +43,10 @@ CXXGEN_API AstNodePtr<ClassNode> AstBuilder::createClass() {
 
 CXXGEN_API AstNodePtr<StructNode> AstBuilder::createStruct() {
 	return cxxgen::makeAstNode<cxxgen::StructNode>(allocator.get(), allocator.get(), translationUnit);
+}
+
+CXXGEN_API AstNodePtr<VoidTypeNameNode> AstBuilder::buildVoidTypeName() {
+	return cxxgen::makeAstNode<cxxgen::VoidTypeNameNode>(allocator.get(), allocator.get(), translationUnit);
 }
 
 CXXGEN_API AstNodePtr<IntLiteralExprNode> AstBuilder::buildIntLiteralExpr(int data) {

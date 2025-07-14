@@ -72,7 +72,7 @@ int main() {
 
 		cxxgen::AstNodePtr<cxxgen::IntLiteralExprNode> intExpr;
 
-		if (!(intExpr = astBuilder.buildIntLitrealExpr(123))) {
+		if (!(intExpr = astBuilder.buildIntLiteralExpr(123))) {
 			throw std::bad_alloc();
 		}
 
@@ -97,9 +97,23 @@ int main() {
 			throw std::bad_alloc();
 		}
 
+		cxxgen::AstNodePtr<cxxgen::VoidTypeNameNode> voidType;
+
+		if (!(voidType = astBuilder.buildVoidTypeName())) {
+			throw std::bad_alloc();
+		}
+
+		cxxgen::AstNodePtr<cxxgen::FnNode> fn;
+
+		if (!(fn = astBuilder.buildFn("test", voidType.castTo<cxxgen::TypeNameNode>()))) {
+			throw std::bad_alloc();
+		}
+
+		fn->body = blockStmt;
+
 		ANSIDumpWriter writer;
 
-		if (!cxxgen::dumpAstNode(peff::getDefaultAlloc(), &writer, ifStmt)) {
+		if (!cxxgen::dumpAstNode(peff::getDefaultAlloc(), &writer, fn)) {
 			throw std::bad_alloc();
 		}
 	}
