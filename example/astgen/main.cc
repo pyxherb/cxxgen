@@ -70,6 +70,12 @@ int main() {
 			throw std::bad_alloc();
 		}
 
+		cxxgen::AstNodePtr<cxxgen::IntLiteralExprNode> intExpr;
+
+		if (!(intExpr = astBuilder.buildIntLitrealExpr(123))) {
+			throw std::bad_alloc();
+		}
+
 		cxxgen::AstNodePtr<cxxgen::IfStmtNode> ifStmt;
 
 		cxxgen::AstNodePtr<cxxgen::BlockStmtNode> blockStmt;
@@ -83,7 +89,7 @@ int main() {
 			throw std::bad_alloc();
 		}
 
-		if (!(exprStmt = astBuilder.buildExprStmt(testQualifiedId))) {
+		if (!(exprStmt = astBuilder.buildExprStmt(intExpr.castTo<cxxgen::ExprNode>()))) {
 			throw std::bad_alloc();
 		}
 
