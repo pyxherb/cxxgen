@@ -491,16 +491,83 @@ loop:
 							dumpContext->frames.popBack();
 
 							goto loop;
-						case ExprKind::StringLiteral:
-							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(((StringLiteralExprNode *)expr)->data));
+						case ExprKind::StringLiteral: {
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("\""));
+
+							const char *data = ((StringLiteralExprNode *)astNode)->data.data();
+							size_t len = ((StringLiteralExprNode *)astNode)->data.size();
+							char c;
+
+							size_t idxCharSinceLastEsc = 0;
+
+							for (size_t i = 0; i < len; ++i) {
+								switch ((c = data[i])) {
+									case '\n':
+									case '\t':
+									case '\v':
+									case '\f':
+									case '\a':
+									case '\b':
+									case '\r':
+									case '"':
+									case '\\':
+										CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(std::string_view(data + idxCharSinceLastEsc, i - idxCharSinceLastEsc)));
+
+										switch (c) {
+											case '\0':
+												CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("\\0"));
+												break;
+											case '\n':
+												CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("\\n"));
+												break;
+											case '\t':
+												CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("\\t"));
+												break;
+											case '\v':
+												CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("\\v"));
+												break;
+											case '\f':
+												CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("\\f"));
+												break;
+											case '\a':
+												CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("\\a"));
+												break;
+											case '\b':
+												CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("\\b"));
+												break;
+											case '\r':
+												CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("\\r"));
+												break;
+											case '"':
+												CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("\\\""));
+												break;
+											case '\\':
+												CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("\\\\"));
+												break;
+										}
+
+										idxCharSinceLastEsc = i + 1;
+										break;
+
+									default:
+
+										break;
+								}
+							}
+
+							if (idxCharSinceLastEsc < len)
+								CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(std::string_view(data + idxCharSinceLastEsc, len - idxCharSinceLastEsc)));
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("\""));
 
 							dumpContext->frames.popBack();
 
 							goto loop;
+						}
 						case ExprKind::FloatLiteral: {
-							char s[32];
+							char s[33];
 
-							int len = snprintf(s, sizeof(s), "%.8g", ((FloatLiteralExprNode *)expr)->data);
+							int len = snprintf(s, sizeof(s), "%.8gf", ((FloatLiteralExprNode *)expr)->data);
 
 							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(s, len));
 

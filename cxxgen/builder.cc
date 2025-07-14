@@ -25,10 +25,6 @@ CXXGEN_API AstNodePtr<StructNode> AstBuilder::createStruct() {
 	return cxxgen::makeAstNode<cxxgen::StructNode>(allocator.get(), allocator.get(), translationUnit);
 }
 
-CXXGEN_API AstNodePtr<IdExprNode> AstBuilder::createIdExpr() {
-	return cxxgen::makeAstNode<cxxgen::IdExprNode>(allocator.get(), allocator.get(), translationUnit);
-}
-
 CXXGEN_API AstNodePtr<IntLiteralExprNode> AstBuilder::buildIntLiteralExpr(int data) {
 	return cxxgen::makeAstNode<cxxgen::IntLiteralExprNode>(allocator.get(), allocator.get(), translationUnit, +data);
 }
@@ -55,6 +51,40 @@ CXXGEN_API AstNodePtr<ULongLongLiteralExprNode> AstBuilder::buildULongLongLitera
 
 CXXGEN_API AstNodePtr<CharLiteralExprNode> AstBuilder::buildCharLiteralExpr(char data) {
 	return cxxgen::makeAstNode<cxxgen::CharLiteralExprNode>(allocator.get(), allocator.get(), translationUnit, +data);
+}
+
+CXXGEN_API AstNodePtr<FloatLiteralExprNode> AstBuilder::buildFloatLiteralExpr(float data) {
+	return cxxgen::makeAstNode<cxxgen::FloatLiteralExprNode>(allocator.get(), allocator.get(), translationUnit, +data);
+}
+
+CXXGEN_API AstNodePtr<DoubleLiteralExprNode> AstBuilder::buildDoubleLiteralExpr(double data) {
+	return cxxgen::makeAstNode<cxxgen::DoubleLiteralExprNode>(allocator.get(), allocator.get(), translationUnit, +data);
+}
+
+CXXGEN_API AstNodePtr<BoolLiteralExprNode> AstBuilder::buildBoolLiteralExpr(bool data) {
+	return cxxgen::makeAstNode<cxxgen::BoolLiteralExprNode>(allocator.get(), allocator.get(), translationUnit, +data);
+}
+
+CXXGEN_API AstNodePtr<StringLiteralExprNode> AstBuilder::createStringLiteralExpr() {
+	return cxxgen::makeAstNode<cxxgen::StringLiteralExprNode>(allocator.get(), allocator.get(), translationUnit);
+}
+
+CXXGEN_API AstNodePtr<StringLiteralExprNode> AstBuilder::buildStringLiteralExpr(const std::string_view &name) {
+	auto p = createStringLiteralExpr();
+
+	if (!p) {
+		return {};
+	}
+
+	if (!p->data.build(name)) {
+		return {};
+	}
+
+	return p;
+}
+
+CXXGEN_API AstNodePtr<IdExprNode> AstBuilder::createIdExpr() {
+	return cxxgen::makeAstNode<cxxgen::IdExprNode>(allocator.get(), allocator.get(), translationUnit);
 }
 
 CXXGEN_API AstNodePtr<IdExprNode> AstBuilder::buildIdExpr(const std::string_view &name) {

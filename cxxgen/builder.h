@@ -20,8 +20,6 @@ namespace cxxgen {
 
 		CXXGEN_API AstNodePtr<StructNode> createStruct();
 
-		CXXGEN_API AstNodePtr<IdExprNode> createIdExpr();
-
 		CXXGEN_API AstNodePtr<IntLiteralExprNode> buildIntLiteralExpr(int data);
 
 		CXXGEN_API AstNodePtr<LongLiteralExprNode> buildLongLiteralExpr(long data);
@@ -36,8 +34,17 @@ namespace cxxgen {
 
 		CXXGEN_API AstNodePtr<CharLiteralExprNode> buildCharLiteralExpr(char data);
 
-		CXXGEN_API AstNodePtr<IdExprNode> buildIdExpr(const std::string_view &name);
+		CXXGEN_API AstNodePtr<FloatLiteralExprNode> buildFloatLiteralExpr(float data);
 
+		CXXGEN_API AstNodePtr<DoubleLiteralExprNode> buildDoubleLiteralExpr(double data);
+
+		CXXGEN_API AstNodePtr<BoolLiteralExprNode> buildBoolLiteralExpr(bool data);
+
+		CXXGEN_API AstNodePtr<StringLiteralExprNode> createStringLiteralExpr();
+		CXXGEN_API AstNodePtr<StringLiteralExprNode> buildStringLiteralExpr(const std::string_view &name);
+
+		CXXGEN_API AstNodePtr<IdExprNode> createIdExpr();
+		CXXGEN_API AstNodePtr<IdExprNode> buildIdExpr(const std::string_view &name);
 		CXXGEN_API AstNodePtr<IdExprNode> buildIdExpr(const std::string_view &name, AstNodePtr<AstNode> *templateArgs, size_t nArgs);
 
 		CXXGEN_API AstNodePtr<ScopeResolveExprNode> createScopeResolveExpr();
