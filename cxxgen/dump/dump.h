@@ -8,6 +8,9 @@ namespace cxxgen {
 	enum class DumpFrameType {
 		Initial = 0,
 
+		PointerInnerType,
+		DeclBasePointerInnerType,
+
 		BlockBody,
 
 		IfTrueBranch,
@@ -89,6 +92,8 @@ namespace cxxgen {
 			PlacementNewArgsDumpFrameData> data;
 		AstNodePtr<AstNode> astNode;
 		DumpFrameType frameType;
+
+		bool declBaseTypeHint = false;
 	};
 
 	struct DumpContext;

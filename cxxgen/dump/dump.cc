@@ -169,8 +169,160 @@ loop:
 					break;
 				case AstNodeType::TypeDef:
 					break;
-				case AstNodeType::TypeName:
+				case AstNodeType::TypeName: {
+					TypeNameNode *tn = (TypeNameNode *)astNode;
+
+					if (tn->isConst)
+						CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("const "));
+
+					if (tn->isVolatile)
+						CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("volatile "));
+
+					switch (tn->typeNameKind) {
+						case TypeNameKind::Void:
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("void"));
+
+							dumpContext->frames.popBack();
+
+							goto loop;
+						case TypeNameKind::Int: {
+							IntTypeNameNode *t = (IntTypeNameNode *)tn;
+
+							switch (t->signKind) {
+								case SignKind::Default:
+									break;
+								case SignKind::Signed:
+									CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("signed "));
+									break;
+								case SignKind::Unsigned:
+									CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("unsigned "));
+									break;
+								default:
+									std::terminate();
+							}
+
+							switch (t->sizeModifierKind) {
+								case SizeModifierKind::Default:
+									break;
+								case SizeModifierKind::Short:
+									CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("short "));
+									break;
+								case SizeModifierKind::Long:
+									CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("long "));
+									break;
+								case SizeModifierKind::LongLong:
+									CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("long long "));
+									break;
+								default:
+									std::terminate();
+							}
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("int"));
+
+							dumpContext->frames.popBack();
+
+							goto loop;
+						}
+						case TypeNameKind::Bool:
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("bool"));
+
+							dumpContext->frames.popBack();
+
+							goto loop;
+						case TypeNameKind::Char: {
+							CharTypeNameNode *t = (CharTypeNameNode *)tn;
+
+							switch (t->signKind) {
+								case SignKind::Default:
+									break;
+								case SignKind::Signed:
+									CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("signed "));
+									break;
+								case SignKind::Unsigned:
+									CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("unsigned "));
+									break;
+								default:
+									std::terminate();
+							}
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("char"));
+
+							dumpContext->frames.popBack();
+
+							goto loop;
+						}
+						case TypeNameKind::Float: {
+							FloatTypeNameNode *t = (FloatTypeNameNode *)tn;
+
+							switch (t->sizeModifierKind) {
+								case SizeModifierKind::Default:
+									break;
+								case SizeModifierKind::Short:
+									CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("short "));
+									break;
+								case SizeModifierKind::Long:
+									CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("long "));
+									break;
+								case SizeModifierKind::LongLong:
+									CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("long long "));
+									break;
+								default:
+									std::terminate();
+							}
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("float"));
+
+							dumpContext->frames.popBack();
+
+							goto loop;
+						}
+						case TypeNameKind::Double: {
+							DoubleTypeNameNode *t = (DoubleTypeNameNode *)tn;
+
+							switch (t->sizeModifierKind) {
+								case SizeModifierKind::Default:
+									break;
+								case SizeModifierKind::Short:
+									CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("short "));
+									break;
+								case SizeModifierKind::Long:
+									CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("long "));
+									break;
+								case SizeModifierKind::LongLong:
+									CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("long long "));
+									break;
+								default:
+									std::terminate();
+							}
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("double"));
+
+							dumpContext->frames.popBack();
+
+							goto loop;
+						}
+						case TypeNameKind::Pointer: {
+							PointerTypeNameNode *t = (PointerTypeNameNode *)tn;
+
+							if (curFrame.declBaseTypeHint) {
+								curFrame.frameType = DumpFrameType::PointerInnerType;
+
+								CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(t->innerType.castTo<AstNode>()));
+							} else {
+								curFrame.frameType = DumpFrameType::DeclBasePointerInnerType;
+
+								CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("decltype(("));
+
+								CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(t->innerType.castTo<AstNode>()));
+							}
+
+							goto loop;
+						}
+						default:
+							std::terminate();
+					}
 					break;
+				}
 				case AstNodeType::Stmt: {
 					StmtNode *stmt = (StmtNode *)astNode;
 
@@ -627,6 +779,28 @@ loop:
 			}
 
 			break;
+		}
+		case DumpFrameType::PointerInnerType: {
+			assert(astNode->astNodeType == AstNodeType::TypeName);
+
+			PointerTypeNameNode *t = (PointerTypeNameNode *)astNode;
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("* "));
+
+			dumpContext->frames.popBack();
+
+			goto loop;
+		}
+		case DumpFrameType::DeclBasePointerInnerType: {
+			assert(astNode->astNodeType == AstNodeType::TypeName);
+
+			PointerTypeNameNode *t = (PointerTypeNameNode *)astNode;
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("*)0)"));
+
+			dumpContext->frames.popBack();
+
+			goto loop;
 		}
 		case DumpFrameType::IfTrueBranch: {
 			assert(astNode->astNodeType == AstNodeType::Stmt);
