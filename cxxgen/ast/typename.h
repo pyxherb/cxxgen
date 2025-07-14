@@ -137,6 +137,23 @@ namespace cxxgen {
 		CXXGEN_API RvalueTypeNameNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
 		CXXGEN_API virtual ~RvalueTypeNameNode();
 	};
+
+	class ExprNode;
+
+	class CustomTypeNameNode : public TypeNameNode {
+	public:
+		bool emphasized = false;
+		AstNodePtr<ExprNode> name;
+
+		CXXGEN_API CustomTypeNameNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
+		CXXGEN_API virtual ~CustomTypeNameNode();
+	};
+
+	class AutoTypeNameNode : public TypeNameNode {
+	public:
+		CXXGEN_API AutoTypeNameNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
+		CXXGEN_API virtual ~AutoTypeNameNode();
+	};
 }
 
 #endif

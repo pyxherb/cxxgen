@@ -73,3 +73,15 @@ CXXGEN_API RvalueTypeNameNode::RvalueTypeNameNode(peff::Alloc *selfAllocator, Tr
 
 CXXGEN_API RvalueTypeNameNode::~RvalueTypeNameNode() {
 }
+
+CXXGEN_API CustomTypeNameNode::CustomTypeNameNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : TypeNameNode(selfAllocator, translationUnit, TypeNameKind::Custom) {
+}
+
+CXXGEN_API CustomTypeNameNode::~CustomTypeNameNode() {
+}
+
+CXXGEN_API AutoTypeNameNode::AutoTypeNameNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit) : TypeNameNode(selfAllocator, translationUnit, TypeNameKind::Auto) {
+}
+
+CXXGEN_API AutoTypeNameNode::~AutoTypeNameNode() {
+}
