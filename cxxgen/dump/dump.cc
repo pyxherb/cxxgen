@@ -163,8 +163,21 @@ loop:
 
 					goto loop;
 				}
-				case AstNodeType::Struct:
-					break;
+				case AstNodeType::Struct: {
+					StructNode *s = (StructNode *)astNode;
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("struct "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(s->name));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" {\n"));
+
+					curFrame.frameType = DumpFrameType::StructBody;
+
+					curFrame.data = StructBodyDumpFrameData{ 0 };
+
+					goto loop;
+				}
 				case AstNodeType::Class:
 					break;
 				case AstNodeType::Root:
@@ -852,6 +865,35 @@ loop:
 			}
 
 			break;
+		}
+		case DumpFrameType::StructBody: {
+			assert(astNode->astNodeType == AstNodeType::Struct);
+
+			StructNode *s = (StructNode *)astNode;
+
+			StructBodyDumpFrameData &data = std::get<StructBodyDumpFrameData>(curFrame.data);
+
+			if (data.index)
+				CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("\n"));
+
+			if (data.index >= s->body->size()) {
+				--dumpContext->indentLevel;
+
+				CXXGEN_RETURN_IF_WRITE_FAILED(_fillIndentation(dumpContext, dumpContext->indentLevel));
+
+				CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("};\n"));
+				dumpContext->frames.popBack();
+
+				goto loop;
+			}
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(_fillIndentation(dumpContext, dumpContext->indentLevel));
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(s->body->at(data.index).castTo<AstNode>()));
+
+			++data.index;
+
+			goto loop;
 		}
 		case DumpFrameType::PointerInnerType: {
 			assert(astNode->astNodeType == AstNodeType::TypeName);

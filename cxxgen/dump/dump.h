@@ -8,6 +8,8 @@ namespace cxxgen {
 	enum class DumpFrameType {
 		Initial = 0,
 
+		StructBody,
+
 		PointerInnerType,
 		DeclBasePointerInnerType,
 
@@ -57,6 +59,10 @@ namespace cxxgen {
 		AlignofOperand,
 	};
 
+	struct StructBodyDumpFrameData {
+		size_t index;
+	};
+
 	struct BlockBodyDumpFrameData {
 		size_t index;
 	};
@@ -84,6 +90,7 @@ namespace cxxgen {
 	struct DumpFrame {
 		std::variant<
 			std::monostate,
+			StructBodyDumpFrameData,
 			BlockBodyDumpFrameData,
 			IdTemplateArgsDumpFrameData,
 			InitializerListElementDumpFrameData,
