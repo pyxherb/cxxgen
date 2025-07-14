@@ -22,19 +22,19 @@ namespace cxxgen {
 
 		CXXGEN_API AstNodePtr<IdExprNode> createIdExpr();
 
-		CXXGEN_API AstNodePtr<IntLiteralExprNode> buildIntLitrealExpr(int data);
+		CXXGEN_API AstNodePtr<IntLiteralExprNode> buildIntLiteralExpr(int data);
 
-		CXXGEN_API AstNodePtr<LongLiteralExprNode> buildLongLitrealExpr(long data);
+		CXXGEN_API AstNodePtr<LongLiteralExprNode> buildLongLiteralExpr(long data);
 
-		CXXGEN_API AstNodePtr<LongLongLiteralExprNode> buildLongLongLitrealExpr(long long data);
+		CXXGEN_API AstNodePtr<LongLongLiteralExprNode> buildLongLongLiteralExpr(long long data);
 
-		CXXGEN_API AstNodePtr<UIntLiteralExprNode> buildUIntLitrealExpr(unsigned int data);
+		CXXGEN_API AstNodePtr<UIntLiteralExprNode> buildUIntLiteralExpr(unsigned int data);
 
-		CXXGEN_API AstNodePtr<ULongLiteralExprNode> buildULongLitrealExpr(unsigned long data);
+		CXXGEN_API AstNodePtr<ULongLiteralExprNode> buildULongLiteralExpr(unsigned long data);
 
-		CXXGEN_API AstNodePtr<ULongLongLiteralExprNode> buildULongLongLitrealExpr(unsigned long long data);
+		CXXGEN_API AstNodePtr<ULongLongLiteralExprNode> buildULongLongLiteralExpr(unsigned long long data);
 
-		CXXGEN_API AstNodePtr<CharLiteralExprNode> buildCharLitrealExpr(char data);
+		CXXGEN_API AstNodePtr<CharLiteralExprNode> buildCharLiteralExpr(char data);
 
 		CXXGEN_API AstNodePtr<IdExprNode> buildIdExpr(const std::string_view &name);
 

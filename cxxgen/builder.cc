@@ -29,32 +29,32 @@ CXXGEN_API AstNodePtr<IdExprNode> AstBuilder::createIdExpr() {
 	return cxxgen::makeAstNode<cxxgen::IdExprNode>(allocator.get(), allocator.get(), translationUnit);
 }
 
-CXXGEN_API AstNodePtr<IntLiteralExprNode> AstBuilder::buildIntLitrealExpr(int data) {
-	return cxxgen::makeAstNode<cxxgen::IntLiteralExprNode>(allocator.get(), allocator.get(), translationUnit, data);
+CXXGEN_API AstNodePtr<IntLiteralExprNode> AstBuilder::buildIntLiteralExpr(int data) {
+	return cxxgen::makeAstNode<cxxgen::IntLiteralExprNode>(allocator.get(), allocator.get(), translationUnit, +data);
 }
 
-CXXGEN_API AstNodePtr<LongLiteralExprNode> AstBuilder::buildLongLitrealExpr(long data) {
-	return cxxgen::makeAstNode<cxxgen::LongLiteralExprNode>(allocator.get(), allocator.get(), translationUnit, data);
+CXXGEN_API AstNodePtr<LongLiteralExprNode> AstBuilder::buildLongLiteralExpr(long data) {
+	return cxxgen::makeAstNode<cxxgen::LongLiteralExprNode>(allocator.get(), allocator.get(), translationUnit, +data);
 }
 
-CXXGEN_API AstNodePtr<LongLongLiteralExprNode> AstBuilder::buildLongLongLitrealExpr(long long data) {
-	return cxxgen::makeAstNode<cxxgen::LongLongLiteralExprNode>(allocator.get(), allocator.get(), translationUnit, data);
+CXXGEN_API AstNodePtr<LongLongLiteralExprNode> AstBuilder::buildLongLongLiteralExpr(long long data) {
+	return cxxgen::makeAstNode<cxxgen::LongLongLiteralExprNode>(allocator.get(), allocator.get(), translationUnit, +data);
 }
 
-CXXGEN_API AstNodePtr<UIntLiteralExprNode> AstBuilder::buildUIntLitrealExpr(unsigned int data) {
-	return cxxgen::makeAstNode<cxxgen::UIntLiteralExprNode>(allocator.get(), allocator.get(), translationUnit, data);
+CXXGEN_API AstNodePtr<UIntLiteralExprNode> AstBuilder::buildUIntLiteralExpr(unsigned int data) {
+	return cxxgen::makeAstNode<cxxgen::UIntLiteralExprNode>(allocator.get(), allocator.get(), translationUnit, +data);
 }
 
-CXXGEN_API AstNodePtr<ULongLiteralExprNode> AstBuilder::buildULongLitrealExpr(unsigned long data) {
-	return cxxgen::makeAstNode<cxxgen::ULongLiteralExprNode>(allocator.get(), allocator.get(), translationUnit, data);
+CXXGEN_API AstNodePtr<ULongLiteralExprNode> AstBuilder::buildULongLiteralExpr(unsigned long data) {
+	return cxxgen::makeAstNode<cxxgen::ULongLiteralExprNode>(allocator.get(), allocator.get(), translationUnit, +data);
 }
 
-CXXGEN_API AstNodePtr<ULongLongLiteralExprNode> AstBuilder::buildULongLongLitrealExpr(unsigned long long data) {
-	return cxxgen::makeAstNode<cxxgen::ULongLongLiteralExprNode>(allocator.get(), allocator.get(), translationUnit, data);
+CXXGEN_API AstNodePtr<ULongLongLiteralExprNode> AstBuilder::buildULongLongLiteralExpr(unsigned long long data) {
+	return cxxgen::makeAstNode<cxxgen::ULongLongLiteralExprNode>(allocator.get(), allocator.get(), translationUnit, +data);
 }
 
-CXXGEN_API AstNodePtr<CharLiteralExprNode> AstBuilder::buildCharLitrealExpr(char data) {
-	return cxxgen::makeAstNode<cxxgen::CharLiteralExprNode>(allocator.get(), allocator.get(), translationUnit, data);
+CXXGEN_API AstNodePtr<CharLiteralExprNode> AstBuilder::buildCharLiteralExpr(char data) {
+	return cxxgen::makeAstNode<cxxgen::CharLiteralExprNode>(allocator.get(), allocator.get(), translationUnit, +data);
 }
 
 CXXGEN_API AstNodePtr<IdExprNode> AstBuilder::buildIdExpr(const std::string_view &name) {

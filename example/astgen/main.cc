@@ -72,7 +72,7 @@ int main() {
 
 		cxxgen::AstNodePtr<cxxgen::IntLiteralExprNode> intExpr;
 
-		if (!(intExpr = astBuilder.buildIntLitrealExpr(123))) {
+		if (!(intExpr = astBuilder.buildIntLiteralExpr(123))) {
 			throw std::bad_alloc();
 		}
 
