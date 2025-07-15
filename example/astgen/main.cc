@@ -121,6 +121,15 @@ int main() {
 			throw std::bad_alloc();
 		}
 
+		cxxgen::InheritanceEntry e;
+
+		e.access = cxxgen::InheritanceAccess::Public;
+		e.baseType = voidType.castTo<cxxgen::TypeNameNode>();
+
+		if (!s->baseTypes.pushBack(std::move(e))) {
+			throw std::bad_alloc();
+		}
+
 		ANSIDumpWriter writer;
 
 		if (!cxxgen::dumpAstNode(peff::getDefaultAlloc(), &writer, s)) {

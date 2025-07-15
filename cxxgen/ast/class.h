@@ -24,7 +24,8 @@ namespace cxxgen {
 	};
 
 	struct InheritanceEntry {
-		InheritanceAccess access;
+		InheritanceAccess access = InheritanceAccess::Default;
+		AstNodePtr<TypeNameNode> baseType;
 	};
 
 	class RootNode : public AbstractModuleNode {
@@ -38,6 +39,8 @@ namespace cxxgen {
 		peff::String name;
 		bool isFinal = false;
 
+		peff::DynArray<InheritanceEntry> baseTypes;
+
 		CXXGEN_API ClassNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
 		CXXGEN_API virtual ~ClassNode();
 
@@ -48,6 +51,8 @@ namespace cxxgen {
 	public:
 		peff::String name;
 		bool isFinal = false;
+
+		peff::DynArray<InheritanceEntry> baseTypes;
 
 		CXXGEN_API StructNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit);
 		CXXGEN_API virtual ~StructNode();

@@ -156,8 +156,13 @@ loop:
 					if (f->isNoexcept)
 						CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" noexcept"));
 
-					if (f->body)
-						CXXGEN_RETURN_IF_WRITE_FAILED(dumpAstNode(dumpContext->allocator.get(), dumpContext->writer, f->body.castTo<AstNode>()));
+					if (f->body) {
+						DumpInitialParams initialParams;
+
+						initialParams.initialIndent = dumpContext->indentLevel;
+
+						CXXGEN_RETURN_IF_WRITE_FAILED(dumpAstNode(dumpContext->allocator.get(), dumpContext->writer, f->body.castTo<AstNode>(), initialParams));
+					}
 
 					dumpContext->frames.popBack();
 
@@ -171,6 +176,34 @@ loop:
 					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("struct "));
 
 					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(s->name));
+
+					if (s->baseTypes.size()) {
+						CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(": "));
+
+						for (size_t i = 0; i < s->baseTypes.size(); ++i) {
+							if (i)
+								CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(", "));
+
+							auto &e = s->baseTypes.at(i);
+
+							switch (e.access) {
+								case InheritanceAccess::Default:
+									break;
+								case InheritanceAccess::Public:
+									CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("public "));
+									break;
+								case InheritanceAccess::Private:
+									CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("private "));
+									break;
+								case InheritanceAccess::Protected:
+									CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("protected "));
+									break;
+								default:
+									std::terminate();
+							}
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpAstNode(dumpContext->allocator.get(), dumpContext->writer, e.baseType));
+						}
+					}
 
 					if (s->body) {
 						CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" {\n"));
