@@ -111,9 +111,19 @@ int main() {
 
 		fn->body = blockStmt;
 
+		cxxgen::AstNodePtr<cxxgen::StructNode> s;
+
+		if (!(s = astBuilder.buildStruct("Struct"))) {
+			throw std::bad_alloc();
+		}
+
+		if (!s->body->pushBack(fn.castTo<cxxgen::AstNode>())) {
+			throw std::bad_alloc();
+		}
+
 		ANSIDumpWriter writer;
 
-		if (!cxxgen::dumpAstNode(peff::getDefaultAlloc(), &writer, fn)) {
+		if (!cxxgen::dumpAstNode(peff::getDefaultAlloc(), &writer, s)) {
 			throw std::bad_alloc();
 		}
 	}

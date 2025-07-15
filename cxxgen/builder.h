@@ -24,6 +24,8 @@ namespace cxxgen {
 
 		CXXGEN_API AstNodePtr<StructNode> createStruct();
 
+		CXXGEN_API AstNodePtr<StructNode> buildStruct(const std::string_view &name);
+
 		CXXGEN_API AstNodePtr<VoidTypeNameNode> buildVoidTypeName();
 
 		CXXGEN_API AstNodePtr<IntLiteralExprNode> buildIntLiteralExpr(int data);

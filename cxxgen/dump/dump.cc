@@ -166,15 +166,23 @@ loop:
 				case AstNodeType::Struct: {
 					StructNode *s = (StructNode *)astNode;
 
+					++dumpContext->indentLevel;
+
 					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("struct "));
 
 					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(s->name));
 
-					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" {\n"));
+					if (s->body) {
+						CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" {\n"));
 
-					curFrame.frameType = DumpFrameType::StructBody;
+						curFrame.frameType = DumpFrameType::StructBody;
 
-					curFrame.data = StructBodyDumpFrameData{ 0 };
+						curFrame.data = StructBodyDumpFrameData{ 0 };
+					} else {
+						CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(";\n"));
+
+						dumpContext->frames.popBack();
+					}
 
 					goto loop;
 				}

@@ -45,6 +45,22 @@ CXXGEN_API AstNodePtr<StructNode> AstBuilder::createStruct() {
 	return cxxgen::makeAstNode<cxxgen::StructNode>(allocator.get(), allocator.get(), translationUnit);
 }
 
+CXXGEN_API AstNodePtr<StructNode> AstBuilder::buildStruct(const std::string_view& name) {
+	auto p = createStruct();
+
+	if (!p) {
+		return {};
+	}
+
+	if (!p->name.build(name)) {
+		return {};
+	}
+
+	p->body = decltype(p->body)::value_type(allocator.get());
+
+	return p;
+}
+
 CXXGEN_API AstNodePtr<VoidTypeNameNode> AstBuilder::buildVoidTypeName() {
 	return cxxgen::makeAstNode<cxxgen::VoidTypeNameNode>(allocator.get(), allocator.get(), translationUnit);
 }
