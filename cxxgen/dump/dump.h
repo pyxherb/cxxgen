@@ -9,6 +9,8 @@ namespace cxxgen {
 		Initial = 0,
 
 		StructBody,
+		ClassBody,
+		NamespaceBody,
 
 		PointerInnerType,
 		DeclBasePointerInnerType,
@@ -63,6 +65,14 @@ namespace cxxgen {
 		size_t index;
 	};
 
+	struct ClassBodyDumpFrameData {
+		size_t index;
+	};
+
+	struct NamespaceBodyDumpFrameData {
+		size_t index;
+	};
+
 	struct BlockBodyDumpFrameData {
 		size_t index;
 	};
@@ -91,6 +101,8 @@ namespace cxxgen {
 		std::variant<
 			std::monostate,
 			StructBodyDumpFrameData,
+			ClassBodyDumpFrameData,
+			NamespaceBodyDumpFrameData,
 			BlockBodyDumpFrameData,
 			IdTemplateArgsDumpFrameData,
 			InitializerListElementDumpFrameData,

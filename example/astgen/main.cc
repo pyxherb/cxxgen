@@ -130,6 +130,12 @@ int main() {
 			throw std::bad_alloc();
 		}
 
+		cxxgen::AstNodePtr<cxxgen::RootNode> r;
+
+		if (!(s = astBuilder.buildStruct("Struct"))) {
+			throw std::bad_alloc();
+		}
+
 		ANSIDumpWriter writer;
 
 		if (!cxxgen::dumpAstNode(peff::getDefaultAlloc(), &writer, s)) {

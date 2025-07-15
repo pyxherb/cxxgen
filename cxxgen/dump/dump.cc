@@ -219,12 +219,94 @@ loop:
 
 					goto loop;
 				}
-				case AstNodeType::Class:
-					break;
-				case AstNodeType::Root:
-					break;
-				case AstNodeType::Namespace:
-					break;
+				case AstNodeType::Class: {
+					ClassNode *s = (ClassNode *)astNode;
+
+					++dumpContext->indentLevel;
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("class "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(s->name));
+
+					if (s->baseTypes.size()) {
+						CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(": "));
+
+						for (size_t i = 0; i < s->baseTypes.size(); ++i) {
+							if (i)
+								CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(", "));
+
+							auto &e = s->baseTypes.at(i);
+
+							switch (e.access) {
+								case InheritanceAccess::Default:
+									break;
+								case InheritanceAccess::Public:
+									CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("public "));
+									break;
+								case InheritanceAccess::Private:
+									CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("private "));
+									break;
+								case InheritanceAccess::Protected:
+									CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("protected "));
+									break;
+								default:
+									std::terminate();
+							}
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpAstNode(dumpContext->allocator.get(), dumpContext->writer, e.baseType));
+						}
+					}
+
+					if (s->body) {
+						CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" {\n"));
+
+						curFrame.frameType = DumpFrameType::ClassBody;
+
+						curFrame.data = StructBodyDumpFrameData{ 0 };
+					} else {
+						CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(";\n"));
+
+						dumpContext->frames.popBack();
+					}
+
+					goto loop;
+				}
+				case AstNodeType::Root: {
+					RootNode *r = (RootNode *)astNode;
+
+					for (auto &i : *r->body) {
+						DumpInitialParams initialParams;
+
+						initialParams.initialIndent = dumpContext->indentLevel;
+
+						CXXGEN_RETURN_IF_WRITE_FAILED(dumpAstNode(dumpContext->allocator.get(), dumpContext->writer, i, initialParams));
+					}
+
+					dumpContext->frames.popBack();
+
+					goto loop;
+				}
+				case AstNodeType::Namespace: {
+					NamespaceNode *s = (NamespaceNode *)astNode;
+
+					++dumpContext->indentLevel;
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("namespace "));
+
+					CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(s->name));
+
+					if (s->body) {
+						CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(" {\n"));
+
+						curFrame.frameType = DumpFrameType::NamespaceBody;
+
+						curFrame.data = StructBodyDumpFrameData{ 0 };
+					} else {
+						// Namespace declaration is not allowed.
+						std::terminate();
+					}
+
+					goto loop;
+				}
 				case AstNodeType::VarDef:
 					break;
 				case AstNodeType::TypeDef:
@@ -913,6 +995,35 @@ loop:
 			StructNode *s = (StructNode *)astNode;
 
 			StructBodyDumpFrameData &data = std::get<StructBodyDumpFrameData>(curFrame.data);
+
+			if (data.index)
+				CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("\n"));
+
+			if (data.index >= s->body->size()) {
+				--dumpContext->indentLevel;
+
+				CXXGEN_RETURN_IF_WRITE_FAILED(_fillIndentation(dumpContext, dumpContext->indentLevel));
+
+				CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("};\n"));
+				dumpContext->frames.popBack();
+
+				goto loop;
+			}
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(_fillIndentation(dumpContext, dumpContext->indentLevel));
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(s->body->at(data.index).castTo<AstNode>()));
+
+			++data.index;
+
+			goto loop;
+		}
+		case DumpFrameType::ClassBody: {
+			assert(astNode->astNodeType == AstNodeType::Class);
+
+			ClassNode *s = (ClassNode *)astNode;
+
+			ClassBodyDumpFrameData &data = std::get<ClassBodyDumpFrameData>(curFrame.data);
 
 			if (data.index)
 				CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("\n"));
