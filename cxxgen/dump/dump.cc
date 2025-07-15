@@ -1746,8 +1746,10 @@ loop:
 	std::terminate();
 }
 
-CXXGEN_API bool cxxgen::dumpAstNode(peff::Alloc *allocator, DumpWriter *writer, AstNode *astNode) {
+CXXGEN_API bool cxxgen::dumpAstNode(peff::Alloc *allocator, DumpWriter *writer, AstNode *astNode, const DumpInitialParams &initialParams) {
 	DumpContext dumpContext(allocator, writer);
+
+	dumpContext.indentLevel = initialParams.initialIndent;
 
 	{
 		DumpFrame dumpFrame;

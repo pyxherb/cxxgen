@@ -106,7 +106,12 @@ namespace cxxgen {
 	struct DumpContext;
 
 	[[nodiscard]] CXXGEN_API bool _dumpAstNode(DumpContext *dumpContext);
-	[[nodiscard]] CXXGEN_API bool dumpAstNode(peff::Alloc *allocator, DumpWriter *writer, AstNode *astNode);
+
+	struct DumpInitialParams {
+		size_t initialIndent = 0;
+	};
+
+	[[nodiscard]] CXXGEN_API bool dumpAstNode(peff::Alloc *allocator, DumpWriter *writer, AstNode *astNode, const DumpInitialParams &initialParams = {});
 }
 
 #endif
