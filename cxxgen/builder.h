@@ -14,6 +14,8 @@ namespace cxxgen {
 
 		CXXGEN_API AstNodePtr<RootNode> createRoot();
 
+		CXXGEN_API AstNodePtr<RootNode> buildRoot();
+
 		CXXGEN_API AstNodePtr<FnNode> createFn();
 
 		CXXGEN_API AstNodePtr<FnNode> buildFn(const std::string_view &name, AstNodePtr<TypeNameNode> returnType);
@@ -66,6 +68,10 @@ namespace cxxgen {
 		CXXGEN_API AstNodePtr<BinaryExprNode> createBinaryExpr();
 
 		CXXGEN_API AstNodePtr<BinaryExprNode> buildBinaryExpr(BinaryOp binaryOp, AstNodePtr<ExprNode> lhs, AstNodePtr<ExprNode> rhs);
+
+		CXXGEN_API AstNodePtr<NewExprNode> createNewExpr();
+
+		CXXGEN_API AstNodePtr<NewExprNode> buildNewExpr(AstNodePtr<TypeNameNode> targetType, size_t nArgs, AstNodePtr<ExprNode> *args);
 
 		CXXGEN_API AstNodePtr<ExprStmtNode> createExprStmt();
 

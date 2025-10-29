@@ -41,8 +41,6 @@ namespace cxxgen {
 
 	class ExprNode : public AstNode {
 	public:
-		bool isConst = false;
-		bool isVolatile = false;
 		ExprKind exprKind;
 
 		CXXGEN_API ExprNode(peff::Alloc *selfAllocator, TranslationUnit *translationUnit, ExprKind exprKind);

@@ -47,9 +47,9 @@ namespace cxxgen {
 		NewTargetType,
 		NewArgs,
 
-		//PlacementNewLocation,
-		//PlacementNewTargetType,
-		//PlacementNewArgs,
+		PlacementNewLocation,
+		PlacementNewTargetType,
+		PlacementNewArgs,
 
 		TernaryCondition,
 		TernaryTrueBranch,

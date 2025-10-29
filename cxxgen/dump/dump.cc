@@ -949,8 +949,17 @@ loop:
 
 							goto loop;
 						}
-						case ExprKind::PlacementNew:
-							break;
+						case ExprKind::PlacementNew: {
+							NewExprNode *e = (NewExprNode *)expr;
+
+							curFrame.frameType = DumpFrameType::PlacementNewLocation;
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("new ("));
+
+							CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(e->type.castTo<AstNode>()));
+
+							goto loop;
+						}
 						case ExprKind::Ternary: {
 							TernaryExprNode *e = (TernaryExprNode *)expr;
 
@@ -1828,6 +1837,66 @@ loop:
 			NewExprNode *e = (NewExprNode *)astNode;
 
 			NewArgsDumpFrameData &data = std::get<NewArgsDumpFrameData>(curFrame.data);
+
+			if (data.index >= e->args.size()) {
+				CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));
+				dumpContext->frames.popBack();
+
+				goto loop;
+			}
+
+			if (data.index) {
+				CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(", "));
+			}
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(e->args.at(data.index).castTo<AstNode>()));
+
+			++data.index;
+
+			goto loop;
+		}
+		case DumpFrameType::PlacementNewLocation: {
+			assert(astNode->astNodeType == AstNodeType::Expr);
+
+			PlacementNewExprNode *e = (PlacementNewExprNode *)astNode;
+
+			curFrame.frameType = DumpFrameType::PlacementNewTargetType;
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(") "));
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(e->type.castTo<AstNode>()));
+			break;
+		}
+		case DumpFrameType::PlacementNewTargetType: {
+			assert(astNode->astNodeType == AstNodeType::Expr);
+
+			PlacementNewExprNode *e = (PlacementNewExprNode *)astNode;
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("("));
+
+			dumpContext->frames.popBack();
+
+			{
+				DumpFrame dumpFrame;
+
+				dumpFrame.astNode = astNode->sharedFromThis();
+
+				dumpFrame.frameType = DumpFrameType::PlacementNewArgs;
+
+				dumpFrame.data = PlacementNewArgsDumpFrameData{ 0 };
+
+				if (!dumpContext->frames.pushBack(std::move(dumpFrame)))
+					return false;
+			}
+
+			goto loop;
+		}
+		case DumpFrameType::PlacementNewArgs: {
+			assert(astNode->astNodeType == AstNodeType::Expr);
+
+			PlacementNewExprNode *e = (PlacementNewExprNode *)astNode;
+
+			PlacementNewArgsDumpFrameData &data = std::get<PlacementNewArgsDumpFrameData>(curFrame.data);
 
 			if (data.index >= e->args.size()) {
 				CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write(")"));

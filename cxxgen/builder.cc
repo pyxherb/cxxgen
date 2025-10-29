@@ -13,6 +13,18 @@ CXXGEN_API AstNodePtr<RootNode> AstBuilder::createRoot() {
 	return cxxgen::makeAstNode<cxxgen::RootNode>(allocator.get(), allocator.get(), translationUnit);
 }
 
+CXXGEN_API AstNodePtr<RootNode> AstBuilder::buildRoot() {
+	auto p = createRoot();
+
+	if (!p) {
+		return {};
+	}
+
+	p->body = decltype(p->body)::value_type(allocator.get());
+
+	return p;
+}
+
 CXXGEN_API AstNodePtr<FnNode> AstBuilder::createFn() {
 	return cxxgen::makeAstNode<cxxgen::FnNode>(allocator.get(), allocator.get(), translationUnit);
 }
@@ -234,6 +246,28 @@ CXXGEN_API AstNodePtr<BinaryExprNode> AstBuilder::buildBinaryExpr(BinaryOp binar
 
 	p->lhs = lhs;
 	p->rhs = rhs;
+
+	return p;
+}
+
+CXXGEN_API AstNodePtr<NewExprNode> AstBuilder::createNewExpr() {
+	return cxxgen::makeAstNode<cxxgen::NewExprNode>(allocator.get(), allocator.get(), translationUnit);
+}
+
+CXXGEN_API AstNodePtr<NewExprNode> AstBuilder::buildNewExpr(AstNodePtr<TypeNameNode> targetType, size_t nArgs, AstNodePtr<ExprNode>* args) {
+	auto p = createNewExpr();
+
+	if (!p) {
+		return {};
+	}
+
+	p->type = targetType;
+
+	if (!p->args.resize(nArgs))
+		return {};
+
+	for (size_t i = 0; i < nArgs; ++i)
+		p->args.at(i) = args[i];
 
 	return p;
 }

@@ -97,9 +97,36 @@ int main() {
 			throw std::bad_alloc();
 		}
 
+		if (!(exprStmt = astBuilder.buildExprStmt(intExpr.castTo<cxxgen::ExprNode>()))) {
+			throw std::bad_alloc();
+		}
+
+		if (!blockStmt->body.pushBack(exprStmt.castTo<cxxgen::StmtNode>())) {
+			throw std::bad_alloc();
+		}
+
 		cxxgen::AstNodePtr<cxxgen::VoidTypeNameNode> voidType;
 
 		if (!(voidType = astBuilder.buildVoidTypeName())) {
+			throw std::bad_alloc();
+		}
+
+		cxxgen::AstNodePtr<cxxgen::NewExprNode> newExpr;
+
+		cxxgen::AstNodePtr<cxxgen::ExprNode> args[] = {
+			intExpr.castTo<cxxgen::ExprNode>(),
+			binaryExpr.castTo<cxxgen::ExprNode>()
+		};
+
+		if (!(newExpr = astBuilder.buildNewExpr(voidType.castTo<cxxgen::TypeNameNode>(), std::size(args), args))) {
+			throw std::bad_alloc();
+		}
+
+		if (!(exprStmt = astBuilder.buildExprStmt(newExpr.castTo<cxxgen::ExprNode>()))) {
+			throw std::bad_alloc();
+		}
+
+		if (!blockStmt->body.pushBack(exprStmt.castTo<cxxgen::StmtNode>())) {
 			throw std::bad_alloc();
 		}
 
@@ -132,13 +159,21 @@ int main() {
 
 		cxxgen::AstNodePtr<cxxgen::RootNode> r;
 
-		if (!(s = astBuilder.buildStruct("Struct"))) {
+		if (!(r = astBuilder.buildRoot()))
 			throw std::bad_alloc();
-		}
+
+		if (!(r->body->pushBack(s.castTo<cxxgen::AstNode>())))
+			throw std::bad_alloc();
+
+		if (!(s = astBuilder.buildStruct("MyStruct")))
+			throw std::bad_alloc();
+
+		if (!(r->body->pushBack(s.castTo<cxxgen::AstNode>())))
+			throw std::bad_alloc();
 
 		ANSIDumpWriter writer;
 
-		if (!cxxgen::dumpAstNode(peff::getDefaultAlloc(), &writer, s)) {
+		if (!cxxgen::dumpAstNode(peff::getDefaultAlloc(), &writer, r)) {
 			throw std::bad_alloc();
 		}
 	}
