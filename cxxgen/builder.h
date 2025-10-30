@@ -22,6 +22,8 @@ namespace cxxgen {
 
 		CXXGEN_API AstNodePtr<NamespaceNode> createNamespace();
 
+		CXXGEN_API AstNodePtr<NamespaceNode> buildNamespace(const std::string_view &name);
+
 		CXXGEN_API AstNodePtr<ClassNode> createClass();
 
 		CXXGEN_API AstNodePtr<StructNode> createStruct();
@@ -71,7 +73,7 @@ namespace cxxgen {
 
 		CXXGEN_API AstNodePtr<NewExprNode> createNewExpr();
 
-		CXXGEN_API AstNodePtr<NewExprNode> buildNewExpr(AstNodePtr<TypeNameNode> targetType, size_t nArgs, AstNodePtr<ExprNode> *args);
+		CXXGEN_API AstNodePtr<NewExprNode> buildNewExpr(AstNodePtr<TypeNameNode> targetType, size_t nArgs = 0, AstNodePtr<ExprNode> *args = nullptr);
 
 		CXXGEN_API AstNodePtr<ExprStmtNode> createExprStmt();
 

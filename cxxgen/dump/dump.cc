@@ -299,7 +299,7 @@ loop:
 
 						curFrame.frameType = DumpFrameType::NamespaceBody;
 
-						curFrame.data = StructBodyDumpFrameData{ 0 };
+						curFrame.data = NamespaceBodyDumpFrameData{ 0 };
 					} else {
 						// Namespace declaration is not allowed.
 						std::terminate();
@@ -1043,6 +1043,35 @@ loop:
 				CXXGEN_RETURN_IF_WRITE_FAILED(_fillIndentation(dumpContext, dumpContext->indentLevel));
 
 				CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("};\n"));
+				dumpContext->frames.popBack();
+
+				goto loop;
+			}
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(_fillIndentation(dumpContext, dumpContext->indentLevel));
+
+			CXXGEN_RETURN_IF_WRITE_FAILED(pushInitialDumpFrame(s->body->at(data.index).castTo<AstNode>()));
+
+			++data.index;
+
+			goto loop;
+		}
+		case DumpFrameType::NamespaceBody: {
+			assert(astNode->astNodeType == AstNodeType::Struct);
+
+			NamespaceNode *s = (NamespaceNode *)astNode;
+
+			NamespaceBodyDumpFrameData &data = std::get<NamespaceBodyDumpFrameData>(curFrame.data);
+
+			if (data.index)
+				CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("\n"));
+
+			if (data.index >= s->body->size()) {
+				--dumpContext->indentLevel;
+
+				CXXGEN_RETURN_IF_WRITE_FAILED(_fillIndentation(dumpContext, dumpContext->indentLevel));
+
+				CXXGEN_RETURN_IF_WRITE_FAILED(dumpContext->writer->write("}\n"));
 				dumpContext->frames.popBack();
 
 				goto loop;

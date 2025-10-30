@@ -49,6 +49,22 @@ CXXGEN_API AstNodePtr<NamespaceNode> AstBuilder::createNamespace() {
 	return cxxgen::makeAstNode<cxxgen::NamespaceNode>(allocator.get(), allocator.get(), translationUnit);
 }
 
+CXXGEN_API AstNodePtr<NamespaceNode> AstBuilder::buildNamespace(const std::string_view& name) {
+	auto p = createNamespace();
+
+	if (!p) {
+		return {};
+	}
+
+	if (!p->name.build(name)) {
+		return {};
+	}
+
+	p->body = decltype(p->body)::value_type(allocator.get());
+
+	return p;
+}
+
 CXXGEN_API AstNodePtr<ClassNode> AstBuilder::createClass() {
 	return cxxgen::makeAstNode<cxxgen::ClassNode>(allocator.get(), allocator.get(), translationUnit);
 }
